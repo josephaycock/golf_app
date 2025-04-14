@@ -4,6 +4,7 @@ void main() {
   runApp(const MainApp());
 }
 // This is Kendrick's first commit on Github
+// This is Joshua's first commit on Github
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 

@@ -1,3 +1,5 @@
+//Cayden Anderson 
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -5,6 +7,7 @@ void main() {
 }
 // This is Kendrick's first commit on Github
 // Tien Vo 
+// This is Joshua's first commit on Github
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 

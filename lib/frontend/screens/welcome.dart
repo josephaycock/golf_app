@@ -11,13 +11,12 @@ class WelcomeScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Logo Placeholder
             Container(
               width: 120,
               height: 120,
               decoration: BoxDecoration(
                 color: Colors.grey[300],
-                shape: BoxShape.circle, // use BoxShape.rectangle for square
+                shape: BoxShape.circle,
               ),
               child: const Center(
                 child: Text(
@@ -37,11 +36,8 @@ class WelcomeScreen extends StatelessWidget {
 
             const SizedBox(height: 40),
 
-            // Button
             ElevatedButton(
-              onPressed: () {
-                // Action on tap
-              },
+              onPressed: () {},
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 40,

@@ -1,24 +1,19 @@
-// this is our navigation file
-
 import 'package:flutter/material.dart';
+import 'frontend/screens/welcome.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const MyApp());
 }
 
-// This is Kendrick's first commit on Github
-// Tien Vo 
-// This is Joshua's first commit on Github
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
+    return MaterialApp(
+      title: 'Golf App',
+      theme: ThemeData(primarySwatch: Colors.green),
+      home: const WelcomeScreen(),
     );
   }
 }
-
-
-// joseph comment

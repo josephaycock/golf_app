@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+//This was extremely thrown together with gpt during the 30 minutes in class (if yu want to change it please do)
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 

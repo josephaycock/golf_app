@@ -1,10 +1,11 @@
-//Cayden Anderson 
+// this is our navigation file
 
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MainApp());
 }
+
 // This is Kendrick's first commit on Github
 // Tien Vo 
 // This is Joshua's first commit on Github

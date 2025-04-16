@@ -18,3 +18,4 @@ class MyApp extends StatelessWidget {
   }
 }
 // Kendrick was here again
+//sitting at internship rn, ill work on this later

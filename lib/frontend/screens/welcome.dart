@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -37,7 +38,13 @@ class WelcomeScreen extends StatelessWidget {
             const SizedBox(height: 40),
 
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(),
+                  ),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 40,

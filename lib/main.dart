@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'frontend/screens/welcome.dart';
+import 'frontend/screens/viewGolfCourses.dart';
 
 void main() {
   runApp(const MyApp());

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'login.dart';
+import 'register.dart'; // Add this line
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -35,21 +37,19 @@ class WelcomeScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
 
-              const Spacer(),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 60,
-                    vertical: 16,
-                  ),
-                ),
-                child: const Text('Get Started'),
-              ),
+            const SizedBox(height: 40),
 
-              const SizedBox(height: 40),
-            ],
-          ),
+            ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 16,
+                ),
+              ),
+              child: const Text('Get Started'),
+            ),
+          ],
         ),
       ),
     );

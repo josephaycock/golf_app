@@ -11,10 +11,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Golf App',
+      title: 'Golf App', 
       theme: ThemeData(primarySwatch: Colors.green),
       home: const WelcomeScreen(),
     );
   }
 }
 // Kendrick was here again
+//sitting at internship rn, ill work on this later

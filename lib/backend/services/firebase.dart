@@ -1,4 +1,3 @@
-//this is just a temp file so I can figure out what I am doing with firebase 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,12 +12,10 @@ class FirebaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Call this in your main() function
   Future<void> initialize() async {
     await Firebase.initializeApp();
   }
 
-  // Anonymous sign in
   Future<User?> signInAnonymously() async {
     try {
       UserCredential result = await _auth.signInAnonymously();
@@ -29,7 +26,6 @@ class FirebaseService {
     }
   }
 
-  // Add data to Firestore
   Future<void> addData(String collection, Map<String, dynamic> data) async {
     try {
       await _firestore.collection(collection).add(data);
@@ -39,7 +35,6 @@ class FirebaseService {
     }
   }
 
-  // Read data from Firestore
   Stream<QuerySnapshot> getData(String collection) {
     return _firestore.collection(collection).snapshots();
   }

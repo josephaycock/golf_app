@@ -16,18 +16,14 @@ class WelcomeScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 80),
 
-              // Logo Placeholder
               Container(
                 width: 120,
                 height: 120,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  shape: BoxShape.circle,
-                ),
-                child: const Center(
-                  child: Text(
-                    'Logo',
-                    style: TextStyle(fontSize: 18, color: Colors.black54),
+                decoration: const BoxDecoration(shape: BoxShape.circle),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/images/BirdieBoard.png',
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),

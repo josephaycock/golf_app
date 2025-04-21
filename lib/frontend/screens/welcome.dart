@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
-import 'register.dart'; // Add this line
+import 'register.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -15,6 +15,8 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             children: [
               const SizedBox(height: 80),
+
+              // Logo Placeholder
               Container(
                 width: 120,
                 height: 120,
@@ -37,19 +39,28 @@ class WelcomeScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
 
-            const SizedBox(height: 40),
+              const SizedBox(height: 40),
 
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 16,
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to login screen or register screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 16,
+                  ),
                 ),
+                child: const Text('Get Started'),
               ),
-              child: const Text('Get Started'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

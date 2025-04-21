@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'frontend/screens/welcome.dart';
+import 'frontend/screens/home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Golf App', 
+      title: 'Golf App',
       theme: ThemeData(primarySwatch: Colors.green),
       home: const WelcomeScreen(),
     );

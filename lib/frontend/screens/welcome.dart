@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
+import 'register.dart'; // Add this line
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -53,6 +54,27 @@ class WelcomeScreen extends StatelessWidget {
               ),
               child: const Text('Get Started'),
             ),
+
+            const SizedBox(height: 20),
+
+            // Register button
+            TextButton(
+              onPressed: () {
+                Navigator.push(context,
+                  MaterialPageRoute(
+                    builder: (context) => RegisterWidget(), // Add this line
+                  ),
+                );
+              },
+              child: const Text(
+                'Register',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ), // Add this block
           ],
         ),
       ),

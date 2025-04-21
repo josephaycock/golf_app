@@ -1,26 +1,33 @@
 import 'package:flutter/material.dart';
-//This was extremely thrown together with gpt during the 30 minutes in class (if yu want to change it please do)
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
 
+class RegisterWidget extends StatefulWidget {
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  _RegisterWidgetState createState() => _RegisterWidgetState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterWidgetState extends State<RegisterWidget> {
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
-  String name = '';
-  String email = '';
-  String password = '';
-
-  void _submitForm() {
+  void _register() {
     if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-
-      // Handle registration logic here
-      print('Registering user: $name, $email');
+      final email = _emailController.text;
+      final password = _passwordController.text;
+      // Use email and password to register the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Registered with $email')),
+      );
     }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -31,38 +38,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Name'),
-                onSaved: (value) => name = value!.trim(),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Enter your name' : null,
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,
-                onSaved: (value) => email = value!.trim(),
-                validator: (value) => value == null || !value.contains('@')
-                    ? 'Enter a valid email'
-                    : null,
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                onSaved: (value) => password = value!,
-                validator: (value) =>
-                    value == null || value.length < 6
-                        ? 'Password must be at least 6 characters'
-                        : null,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _submitForm,
-                child: const Text('Register'),
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text("Register", style: TextStyle(fontSize: 24)),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(labelText: 'Email'),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return 'Enter your email';
+                    if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) return 'Enter a valid email';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(labelText: 'Password'),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return 'Enter your password';
+                    if (value.length < 6) return 'Password must be at least 6 characters';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  decoration: const InputDecoration(labelText: 'Confirm Password'),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value != _passwordController.text) return 'Passwords do not match';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _register,
+                  child: const Text('Register'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

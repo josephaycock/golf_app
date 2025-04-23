@@ -20,7 +20,7 @@ class GolfScoreBoard extends StatelessWidget {
     ...List.generate(9, (i) => 'H${i + 10}'),
     'Total'
   ];
-
+//needs to be updated per course we add
   final List<List<String>> teeData = [
     [
       'Black Tee', '###', '###', '###', '###', '###', '###', '###', '###', '###', 'Black Tee', '###', '###', '###', '###', '###', '###', '###', '###', '###', '###'

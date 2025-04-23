@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class RegisterWidget extends StatefulWidget {
+  const RegisterWidget({super.key});
+
   @override
   _RegisterWidgetState createState() => _RegisterWidgetState();
 }

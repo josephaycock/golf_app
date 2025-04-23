@@ -15,6 +15,8 @@ class GolfScoreBoard extends StatelessWidget {
   final int playerCount = 5;
   final int holeCount = 8;
 
+  const GolfScoreBoard({super.key});
+
 
   
   @override

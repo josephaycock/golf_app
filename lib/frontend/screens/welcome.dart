@@ -48,28 +48,47 @@ class WelcomeScreen extends StatelessWidget {
                 horizontal: 20.0,
                 vertical: 30,
               ),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: const StadiumBorder(),
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 18),
-                  ),
-                  child: const Text(
-                    'Get Started',
-                    style: TextStyle(fontSize: 18),
-                  ),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch ,children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RegisterWidget(),
+                    ),
+                  );
+                },
+                child: const Text("No account? Register",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                  fontSize: 16,
                 ),
+                ),
+              ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 18),
+                    ),
+                    child: const Text(
+                      'Get Started',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

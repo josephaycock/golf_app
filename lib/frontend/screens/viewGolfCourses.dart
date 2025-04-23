@@ -12,14 +12,12 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> {
   int _currentScore = 0;
 
   // Placeholder for distance to hole
-  double _distanceToHole = 150.0; // in yards, just an example
+  final double _distanceToHole = 150.0; // in yards, just an example
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('View Golf Course'),
-      ),
+      appBar: AppBar(title: const Text('View Golf Course')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

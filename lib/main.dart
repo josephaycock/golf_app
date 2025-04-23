@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:golf_app/frontend/screens/home.dart';
 import 'frontend/screens/welcome.dart';
+import 'frontend/screens/help.dart';
+import 'frontend/screens/scoreboard.dart';
+import 'frontend/screens/viewGolfCourses.dart';
+import 'frontend/screens/player_profile.dart';
 import 'frontend/screens/home.dart';
+import 'frontend/widgets/nav_wrapper.dart';
+import 'frontend/screens/login.dart';
+import 'frontend/screens/register.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,11 +20,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Golf App',
       theme: ThemeData(primarySwatch: Colors.green),
-      home: const WelcomeScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const WelcomeScreen(),
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterWidget(),
+        '/nav': (context) => const NavWrapper(), // Home + navbar
+      },
     );
   }
 }
-// Kendrick was here again
-//sitting at internship rn, ill work on this later

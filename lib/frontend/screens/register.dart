@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class RegisterWidget extends StatefulWidget {
+  const RegisterWidget({super.key});
+
   @override
   _RegisterWidgetState createState() => _RegisterWidgetState();
 }
@@ -16,9 +18,9 @@ class _RegisterWidgetState extends State<RegisterWidget> {
       final email = _emailController.text;
       final password = _passwordController.text;
       // Use email and password to register the user
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registered with $email')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Registered with $email')));
     }
   }
 
@@ -49,8 +51,10 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   decoration: const InputDecoration(labelText: 'Email'),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Enter your email';
-                    if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) return 'Enter a valid email';
+                    if (value == null || value.isEmpty)
+                      return 'Enter your email';
+                    if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value))
+                      return 'Enter a valid email';
                     return null;
                   },
                 ),
@@ -60,18 +64,23 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   decoration: const InputDecoration(labelText: 'Password'),
                   obscureText: true,
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Enter your password';
-                    if (value.length < 6) return 'Password must be at least 6 characters';
+                    if (value == null || value.isEmpty)
+                      return 'Enter your password';
+                    if (value.length < 6)
+                      return 'Password must be at least 6 characters';
                     return null;
                   },
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _confirmPasswordController,
-                  decoration: const InputDecoration(labelText: 'Confirm Password'),
+                  decoration: const InputDecoration(
+                    labelText: 'Confirm Password',
+                  ),
                   obscureText: true,
                   validator: (value) {
-                    if (value != _passwordController.text) return 'Passwords do not match';
+                    if (value != _passwordController.text)
+                      return 'Passwords do not match';
                     return null;
                   },
                 ),

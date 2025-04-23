@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(
-    theme: ThemeData.dark().copyWith(
-      scaffoldBackgroundColor: Colors.black,
-      appBarTheme: AppBarTheme(backgroundColor: Colors.black),
-      textTheme: ThemeData.dark().textTheme.apply(bodyColor: Colors.white),
+  runApp(
+    MaterialApp(
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: Colors.black,
+        appBarTheme: AppBarTheme(backgroundColor: Colors.black),
+        textTheme: ThemeData.dark().textTheme.apply(bodyColor: Colors.white),
+      ),
+      home: GolfScoreBoard(),
     ),
-    home: GolfScoreBoard(),
-  ));
+  );
 }
 
 class GolfScoreBoard extends StatelessWidget {
   final int playerCount = 5;
   final int holeCount = 8;
 
+  const GolfScoreBoard({super.key});
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,8 +44,17 @@ class GolfScoreBoard extends StatelessWidget {
   Widget _buildHeaderRow() {
     return Row(
       children: [
-        SizedBox(width: 60, child: Text('Player', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
-        ...List.generate(holeCount, (index) => _buildCell('H${index + 1}', isHeader: true)),
+        SizedBox(
+          width: 60,
+          child: Text(
+            'Player',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+        ),
+        ...List.generate(
+          holeCount,
+          (index) => _buildCell('H${index + 1}', isHeader: true),
+        ),
       ],
     );
   }
@@ -61,7 +72,10 @@ class GolfScoreBoard extends StatelessWidget {
                 child: Icon(Icons.person, size: 16, color: Colors.white),
               ),
               SizedBox(width: 4),
-              Text('P${playerIndex + 1}', style: TextStyle(color: Colors.white)),
+              Text(
+                'P${playerIndex + 1}',
+                style: TextStyle(color: Colors.white),
+              ),
             ],
           ),
         ),

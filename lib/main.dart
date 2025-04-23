@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:golf_app/frontend/screens/home.dart';
 import 'frontend/screens/welcome.dart';
-import 'frontend/screens/help.dart';
-import 'frontend/screens/scoreboard.dart';
-import 'frontend/screens/viewGolfCourses.dart';
-import 'frontend/screens/player_profile.dart';
-import 'frontend/screens/home.dart';
 import 'frontend/widgets/nav_wrapper.dart';
 import 'frontend/screens/login.dart';
 import 'frontend/screens/register.dart';

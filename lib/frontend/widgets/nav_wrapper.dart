@@ -18,12 +18,12 @@ class NavWrapper extends StatefulWidget {
 class _NavWrapperState extends State<NavWrapper> {
   late int _selectedIndex;
 
-  final List<Widget> _pages = const [
+  final List<Widget> _pages = [
     GolfScoreBoard(), // 0
-    HelpScreen(), // 1
-    HomeScreen(), // 2
-    ViewGolfCourses(), // 3
-    PlayerProfileScreen(), // 4
+    const HelpScreen(), // 1
+    const HomeScreen(), // 2
+    const ViewGolfCourses(), // 3
+    const PlayerProfileScreen(), // 4
   ];
 
   @override

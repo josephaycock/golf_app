@@ -13,14 +13,9 @@ class LoginScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            const Text(
-              'Welcome Back!',
-              style: TextStyle(fontSize: 24),
-            ),
+            const Text('Welcome Back!', style: TextStyle(fontSize: 24)),
             const SizedBox(height: 20),
-            TextField(
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
+            TextField(decoration: const InputDecoration(labelText: 'Email')),
             const SizedBox(height: 10),
             TextField(
               decoration: const InputDecoration(labelText: 'Password'),
@@ -29,7 +24,8 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // TODO: Implement login functionality
+                // TEMP: Route to home via NavWrapper
+                Navigator.pushReplacementNamed(context, '/nav');
               },
               child: const Text('Log In'),
             ),

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:golf_app/frontend/screens/viewGolfCourses.dart';
+import 'package:golf_app/frontend/screens/scoreboard.dart';
+import 'package:golf_app/frontend/screens/player_profile.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -58,6 +61,14 @@ class HomeScreen extends StatelessWidget {
                     title: 'Course Finder',
                     description:
                         'Explore various courses nearby and map out your next round.',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ViewGolfCourses(),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 20),
                   FeatureCard(
@@ -65,21 +76,33 @@ class HomeScreen extends StatelessWidget {
                     title: 'Scoreboard Battles',
                     description:
                         'Climb the ranks and compete with other players.',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GolfScoreBoard(),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 20),
                   FeatureCard(
-                    icon: Icons.insights,
-                    title: 'Stat Tracking',
-                    description:
-                        'Analyze your birdies, pars, and greens live durinng play with detailed insights.',
+                    icon: Icons.person,
+                    title: 'View/Build BirdieBoard Profile',
+                    description: 'Create and customize your golf profile.',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PlayerProfileScreen(),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 40),
 
                   // Bottom Logo
-                  Image.asset(
-                    'assets/images/BirdieBoard.png', // ✅ Black Main logo
-                    width: 100,
-                  ),
+                  Image.asset('assets/images/BirdieBoard.png', width: 100),
                   const SizedBox(height: 20),
                   const Text(
                     'BirdieBoard — Master Your Golf Game.',
@@ -99,54 +122,59 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// FeatureCard Widget
 class FeatureCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String description;
+  final VoidCallback onTap;
 
   const FeatureCard({
     super.key,
     required this.icon,
     required this.title,
     required this.description,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white24),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 40, color: Colors.white),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white24),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, size: 40, color: Colors.white),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  description,
-                  style: const TextStyle(fontSize: 16, color: Colors.white70),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Text(
+                    description,
+                    style: const TextStyle(fontSize: 16, color: Colors.white70),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -1,4 +1,3 @@
-// lib/frontend/screens/nav_wrapper.dart
 import 'package:flutter/material.dart';
 import 'package:golf_app/frontend/screens/home.dart';
 import '../widgets/navbar.dart';
@@ -23,7 +22,6 @@ class _NavWrapperState extends State<NavWrapper> {
     const HelpScreen(), // 1
     const HomeScreen(), // 2
     const ViewGolfCourses(), // 3
-    const PlayerProfileScreen(), // 4
   ];
 
   @override
@@ -41,7 +39,48 @@ class _NavWrapperState extends State<NavWrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: Stack(
+        children: [
+          _pages[_selectedIndex], // Main content
+          // Floating Profile Icon (smaller + tighter)
+          Positioned(
+            top: 12, // Tighter to top
+            right: 12, // Tighter to right
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PlayerProfileScreen(),
+                      ),
+                    );
+                  },
+                  child: const CircleAvatar(
+                    radius: 20, // 🔥 Smaller and cleaner (was 26 before)
+                    backgroundColor: Colors.black,
+                    child: Icon(
+                      Icons.person,
+                      color: Colors.white,
+                      size: 22,
+                    ), // 🔥 Also smaller inside
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'View Profile',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 11, // 🔥 Slightly smaller
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
       bottomNavigationBar: CustomNavBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

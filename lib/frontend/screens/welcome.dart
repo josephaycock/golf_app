@@ -34,8 +34,8 @@ class WelcomeScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           Container(
-                            width: screenWidth * 0.44,
-                            height: screenWidth * 0.44,
+                            width: screenWidth * 0.42,
+                            height: screenWidth * 0.42,
                             decoration: const BoxDecoration(shape: BoxShape.circle),
                             child: ClipOval(
                               child: Image.asset(

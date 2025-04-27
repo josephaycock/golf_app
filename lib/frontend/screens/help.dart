@@ -18,7 +18,7 @@ class HelpScreen extends StatelessWidget {
             const Text(
               'Frequently Asked Questions',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 24, 
                 fontWeight: FontWeight.bold,
               ),
             ),

@@ -1,6 +1,5 @@
-// lib/frontend/screens/player_profile.dart
-
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../backend/services/firebase.dart';
 import '../../backend/services/models/player_stats.dart';
 
@@ -13,13 +12,13 @@ class PlayerProfile extends StatefulWidget {
 
 class _PlayerProfileState extends State<PlayerProfile> {
   final FirebaseService _firebaseService = FirebaseService();
-  final String _userId = "demoUser"; // TODO: Replace this with real userId when you add login
-  
+  late String _userId;
   PlayerStats _playerStats = PlayerStats();
 
   @override
   void initState() {
     super.initState();
+    _userId = FirebaseAuth.instance.currentUser!.uid;
     _loadStats();
   }
 

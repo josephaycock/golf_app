@@ -53,7 +53,7 @@ class _NavWrapperState extends State<NavWrapper> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const PlayerProfileScreen(),
+                        builder: (context) => const PlayerProfile(),
                       ),
                     );
                   },

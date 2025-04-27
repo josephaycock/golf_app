@@ -3,6 +3,53 @@ import 'package:flutter/material.dart';
 class HelpScreen extends StatelessWidget {
   const HelpScreen({super.key});
 
+  void _showFeedbackDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Send Feedback'),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                maxLines: 5,
+                decoration: const InputDecoration(
+                  hintText: 'Type your feedback here...',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  // TODO: Implement feedback submission
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Feedback sent successfully!')),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green[800],
+                  foregroundColor: Colors.black,
+                ),
+                child: const Text('Send'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +72,7 @@ class HelpScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _buildFAQItem(
               'How do I start a new game?',
-              'To start a new game, go to the Home screen and ....',
+              'To start a new game, go to the Home screen, select your course, and begin playing!',
             ),
             _buildFAQItem(
               'How do I track my score?',
@@ -69,9 +116,7 @@ class HelpScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () {
-                        // TODO: Implement email support
-                      },
+                      onPressed: () => _showFeedbackDialog(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green[800],
                         foregroundColor: Colors.black,

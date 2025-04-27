@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
-import 'register.dart';
+import 'register.dart'; // <-- Make sure you have register.dart correctly made
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -62,8 +62,8 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 110.0,
-                        vertical: 130,
+                        horizontal: 40.0, // <-- Fixed horizontal padding (was too small before)
+                        vertical: 30.0,   // <-- Reduced vertical padding (was 130 causing overflow)
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,

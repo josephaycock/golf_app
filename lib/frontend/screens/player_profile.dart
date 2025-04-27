@@ -1,97 +1,84 @@
-//displays player stats
-
-//connect to player account info
+// lib/frontend/screens/player_profile.dart
 
 import 'package:flutter/material.dart';
+import '../../backend/services/firebase.dart';
+import '../../backend/services/models/player_stats.dart';
 
-class PlayerProfileScreen extends StatelessWidget {
-  const PlayerProfileScreen({super.key});
+class PlayerProfile extends StatefulWidget {
+  const PlayerProfile({Key? key}) : super(key: key);
+
+  @override
+  _PlayerProfileState createState() => _PlayerProfileState();
+}
+
+class _PlayerProfileState extends State<PlayerProfile> {
+  final FirebaseService _firebaseService = FirebaseService();
+  final String _userId = "demoUser"; // TODO: Replace this with real userId when you add login
+  
+  PlayerStats _playerStats = PlayerStats();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStats();
+  }
+
+  Future<void> _loadStats() async {
+    var data = await _firebaseService.getPlayerStats(_userId);
+    if (data != null) {
+      setState(() {
+        _playerStats = PlayerStats.fromJson(data);
+      });
+    }
+  }
+
+  Future<void> _saveStats() async {
+    await _firebaseService.savePlayerStats(_userId, _playerStats.toJson());
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Stats Saved!')),
+    );
+  }
+
+  void _increment(String stat) {
+    setState(() {
+      switch (stat) {
+        case 'gamesPlayed':
+          _playerStats.gamesPlayed++;
+          break;
+        case 'totalStrokes':
+          _playerStats.totalStrokes++;
+          break;
+        case 'birdies':
+          _playerStats.birdies++;
+          break;
+        case 'pars':
+          _playerStats.pars++;
+          break;
+        case 'bogeys':
+          _playerStats.bogeys++;
+          break;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Player Profile"),
-        centerTitle: true,
-        backgroundColor: Colors.green[800],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      appBar: AppBar(title: const Text('Player Profile')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Profile Header
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 40,
-                      backgroundImage: AssetImage('assets/profile.jpg'), // Replace with pfp
-                    ),
-                    const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "PLAYERNAME PLACEHOLD",
-                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 4),
-                        Text("Handicap: 5.3", style: TextStyle(fontSize: 16)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
+            StatRow(title: 'Games Played', value: _playerStats.gamesPlayed, onTap: () => _increment('gamesPlayed')),
+            StatRow(title: 'Total Strokes', value: _playerStats.totalStrokes, onTap: () => _increment('totalStrokes')),
+            StatRow(title: 'Birdies', value: _playerStats.birdies, onTap: () => _increment('birdies')),
+            StatRow(title: 'Pars', value: _playerStats.pars, onTap: () => _increment('pars')),
+            StatRow(title: 'Bogeys', value: _playerStats.bogeys, onTap: () => _increment('bogeys')),
             const SizedBox(height: 20),
-
-            // Stats Section
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: const [
-                    //Placehold
-                    _StatItem(label: "Rounds", value: "42"),
-                    _StatItem(label: "Avg Score", value: "78.4"),
-                    _StatItem(label: "Best Score", value: "70"),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Recent Scores List
-            //Placehold
-            Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Recent Rounds",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const Divider(),
-                    _RoundItem(date: "Apr 18, 2025", score: 75),
-                    _RoundItem(date: "Apr 14, 2025", score: 78),
-                    _RoundItem(date: "Apr 10, 2025", score: 73),
-                  ],
-                ),
-              ),
-            ),
+            ElevatedButton(
+              onPressed: _saveStats,
+              child: const Text('Save Stats'),
+            )
           ],
         ),
       ),
@@ -99,43 +86,24 @@ class PlayerProfileScreen extends StatelessWidget {
   }
 }
 
-class _StatItem extends StatelessWidget {
-  final String label;
-  final String value;
+class StatRow extends StatelessWidget {
+  final String title;
+  final int value;
+  final VoidCallback onTap;
 
-  const _StatItem({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontSize: 14)),
-      ],
-    );
-  }
-}
-
-class _RoundItem extends StatelessWidget {
-  final String date;
-  final int score;
-
-  const _RoundItem({required this.date, required this.score});
+  const StatRow({
+    Key? key,
+    required this.title,
+    required this.value,
+    required this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: const Icon(Icons.golf_course, color: Colors.green),
-      title: Text(date),
-      trailing: Text(
-        "$score",
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-      ),
+      title: Text(title),
+      trailing: Text(value.toString()),
+      onTap: onTap,
     );
   }
 }

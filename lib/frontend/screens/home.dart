@@ -1,7 +1,9 @@
+// lib/frontend/screens/home.dart
+
 import 'package:flutter/material.dart';
 import 'package:golf_app/frontend/screens/viewGolfCourses.dart';
 import 'package:golf_app/frontend/screens/scoreboard.dart';
-import 'package:golf_app/frontend/screens/player_profile.dart';
+import 'package:golf_app/frontend/screens/player_profile.dart'; // <-- Correct import now
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -20,10 +22,7 @@ class HomeScreen extends StatelessWidget {
           // Main Content
           SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24.0,
-                vertical: 40.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -59,14 +58,11 @@ class HomeScreen extends StatelessWidget {
                   FeatureCard(
                     icon: Icons.golf_course,
                     title: 'Course Finder',
-                    description:
-                        'Explore various courses nearby and map out your next round.',
+                    description: 'Explore various courses nearby and map out your next round.',
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const ViewGolfCourses(),
-                        ),
+                        MaterialPageRoute(builder: (context) => const ViewGolfCourses()),
                       );
                     },
                   ),
@@ -74,14 +70,11 @@ class HomeScreen extends StatelessWidget {
                   FeatureCard(
                     icon: Icons.leaderboard,
                     title: 'Scoreboard Battles',
-                    description:
-                        'Climb the ranks and compete with other players.',
+                    description: 'Climb the ranks and compete with other players.',
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => GolfScoreBoard(),
-                        ),
+                        MaterialPageRoute(builder: (context) => GolfScoreBoard()),
                       );
                     },
                   ),
@@ -93,9 +86,7 @@ class HomeScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const PlayerProfileScreen(),
-                        ),
+                        MaterialPageRoute(builder: (context) => const PlayerProfile()), // <-- FIXED THIS
                       );
                     },
                   ),

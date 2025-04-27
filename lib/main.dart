@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'frontend/screens/welcome.dart';
-import 'frontend/widgets/nav_wrapper.dart';
 import 'frontend/screens/login.dart';
-import 'frontend/screens/register.dart';
+import 'frontend/widgets/nav_wrapper.dart'; // <-- wherever your NavWrapper is
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -14,15 +16,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       title: 'Golf App',
-      theme: ThemeData(primarySwatch: Colors.green),
-      initialRoute: '/',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
+      home: const WelcomeScreen(),
       routes: {
-        '/': (context) => const WelcomeScreen(),
         '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterWidget(),
-        '/nav': (context) => const NavWrapper(), // Home + navbar
+        '/nav': (context) => const NavWrapper(),
       },
     );
   }

@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:golf_app/frontend/screens/viewGolfCourses.dart';
 import 'package:golf_app/frontend/screens/scoreboard.dart';
-import 'package:golf_app/frontend/screens/player_profile.dart'; // <-- Correct import now
+import 'package:golf_app/frontend/screens/stats.dart'; // <-- Correct import (StatsPage)
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Title logo (Black version)
+                  // Title logo
                   Image.asset('assets/images/BirdieBoard.png', width: 250),
                   const SizedBox(height: 30),
                   const Text(
@@ -80,13 +80,13 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   FeatureCard(
-                    icon: Icons.person,
-                    title: 'View/Build BirdieBoard Profile',
-                    description: 'Create and customize your golf profile.',
+                    icon: Icons.bar_chart,
+                    title: 'View Your Stats',
+                    description: 'Track and improve your golf performance.',
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const PlayerProfile()), // <-- FIXED THIS
+                        MaterialPageRoute(builder: (context) => const StatsPage()), // <-- FIXED
                       );
                     },
                   ),

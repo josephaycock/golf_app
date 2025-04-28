@@ -4,7 +4,7 @@ import '../widgets/navbar.dart';
 import '../screens/help.dart';
 import '../screens/scoreboard.dart';
 import '../screens/viewGolfCourses.dart';
-import '../screens/player_profile.dart';
+import '../screens/stats.dart'; // <-- This now imports the updated StatsPage
 
 class NavWrapper extends StatefulWidget {
   final int initialIndex;
@@ -22,6 +22,7 @@ class _NavWrapperState extends State<NavWrapper> {
     const HelpScreen(), // 1
     const HomeScreen(), // 2
     const ViewGolfCourses(), // 3
+    const StatsPage(), // 4 <-- updated
   ];
 
   @override
@@ -39,48 +40,7 @@ class _NavWrapperState extends State<NavWrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          _pages[_selectedIndex], // Main content
-          // Floating Profile Icon (smaller + tighter)
-          Positioned(
-            top: 12, // Tighter to top
-            right: 12, // Tighter to right
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PlayerProfile(),
-                      ),
-                    );
-                  },
-                  child: const CircleAvatar(
-                    radius: 20, // 🔥 Smaller and cleaner (was 26 before)
-                    backgroundColor: Colors.black,
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.white,
-                      size: 22,
-                    ), // 🔥 Also smaller inside
-                  ),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'View Profile',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 11, // 🔥 Slightly smaller
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      body: _pages[_selectedIndex],
       bottomNavigationBar: CustomNavBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

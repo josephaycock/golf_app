@@ -72,15 +72,20 @@ class HelpScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _buildFAQItem(
               'How do I start a new game?',
-              'To start a new game, go to the Home screen, select your course, and begin playing!',
+              'To start a new game, go to the Scoreboard screen, and press the top right button to start a new game!',
             ),
             _buildFAQItem(
               'How do I track my score?',
               'During the game, you can tap on each hole to put in your score. The app will then automatically calculate your total score and stats.',
             ),
             _buildFAQItem(
-              'Can I save my game progress?',
-              'I think so? Ask me later',
+              'How do I add new players?',
+              'To add a new player, go to the Scoreboard screen, and press the "+" button to add a new player.'
+            ),
+            _buildFAQItem(
+              'How do I edit and delete a player?',
+              'To edit the player name: tap the name you want to change.\n'
+              'To delete a player: hold down on the name you want to delete.'
             ),
             const SizedBox(height: 24),
             const Text(

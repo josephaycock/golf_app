@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
-import 'register.dart'; // <-- Make sure you have register.dart correctly made
+import 'register.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -9,6 +9,7 @@ class WelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final padding = MediaQuery.of(context).padding;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -24,105 +25,115 @@ class WelcomeScreen extends StatelessWidget {
             SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight: screenHeight - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom,
+                  minHeight: screenHeight - padding.top - padding.bottom,
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 70),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: screenWidth * 0.42,
-                            height: screenWidth * 0.42,
-                            decoration: const BoxDecoration(shape: BoxShape.circle),
-                            child: ClipOval(
-                              child: Image.asset(
-                                'assets/images/BirdieBoard.png',
-                                fit: BoxFit.cover,
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 100),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: screenWidth * 0.75,
+                              height: screenWidth * 0.4,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 40.0),
-                            child: Text(
-                              'Track your golf game with ease (PLACEHOLDER TEXT)',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 40.0, // <-- Fixed horizontal padding (was too small before)
-                        vertical: 30.0,   // <-- Reduced vertical padding (was 130 causing overflow)
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const LoginScreen(),
+                              child: ClipOval(
+                                child: Image.asset(
+                                  'assets/images/titleImage.png',
+                                  fit: BoxFit.cover,
                                 ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: const StadiumBorder(),
-                              backgroundColor: const Color.fromARGB(255, 27, 27, 27),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              ),
                             ),
-                            child: const Text(
-                              'Get Started',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ),
-                          const SizedBox(height: 17),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "Don't have an account? ",
+                            const SizedBox(height: 10),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 70.0),
+                              child: Text(
+                                'Track your golf game with ease (PLACEHOLDER TEXT)',
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black87,
                                 ),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const RegisterWidget(),
-                                    ),
-                                  );
-                                },
-                                child: const Text(
-                                  "Register here",
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginScreen(),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                shape: const StadiumBorder(),
+                                backgroundColor: const Color.fromARGB(
+                                  255,
+                                  27,
+                                  27,
+                                  27,
+                                ),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 18,
+                                ),
+                              ),
+                              child: const Text(
+                                'Get Started',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "Don't have an account? ",
                                   style: TextStyle(
                                     fontSize: 16,
-                                    color: Colors.blue,
-                                    decoration: TextDecoration.underline,
+                                    color: Colors.black,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => const RegisterWidget(),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text(
+                                    "Register here",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 240),
+                    ],
+                  ),
                 ),
               ),
             ),

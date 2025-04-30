@@ -13,7 +13,10 @@ class ViewGolfCourses extends StatefulWidget {
 class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAliveClientMixin {
   int _currentScore = 0;
   double? _calculatedDistance;
-  LatLng? _currentLocation;
+  bool _useYards = true; // <-- Toggle between yards/meters
+
+  // LSU Golf Course Hole 1
+  LatLng? _currentLocation = LatLng(30.399895, -91.184794);
   LatLng? _holePosition;
 
   final MapController _mapController = MapController();
@@ -27,13 +30,16 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
   Future<void> _initializeLocation() async {
     await _ensureLocationPermission();
 
-    final position = await Geolocator.getCurrentPosition();
-    final userLatLng = LatLng(position.latitude, position.longitude);
-    setState(() {
-      _currentLocation = userLatLng;
-    });
+    // Move to hardcoded location immediately
+    _mapController.move(_currentLocation!, 19.0);
 
-    _mapController.move(userLatLng, 19.0);
+    // Still try to get user's real GPS position (not used now)
+    try {
+      final position = await Geolocator.getCurrentPosition();
+      print('User location (GPS): ${position.latitude}, ${position.longitude}');
+    } catch (e) {
+      print('Failed to get current location: $e');
+    }
   }
 
   Future<void> _ensureLocationPermission() async {
@@ -62,7 +68,7 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
         tappedLocation.longitude,
       );
       setState(() {
-        _calculatedDistance = distanceInMeters / 1.09361;
+        _calculatedDistance = distanceInMeters;
       });
     }
   }
@@ -109,15 +115,55 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
           // Distance UI
           Card(
             margin: const EdgeInsets.symmetric(horizontal: 12),
-            child: ListTile(
-              title: const Text('Distance to Hole'),
-              subtitle: Text(_calculatedDistance == null
-                  ? 'Tap the map to place the flag'
-                  : '${_calculatedDistance!.toStringAsFixed(1)} yards'),
+            child: Row(
+              children: [
+                // Distance label and value
+                Expanded(
+                  child: ListTile(
+                    title: const Text('Distance to Hole'),
+                    subtitle: Text(_calculatedDistance == null
+                        ? 'Tap the map to place the flag'
+                        : _useYards
+                            ? '${(_calculatedDistance! / 1.09361).toStringAsFixed(1)} yards'
+                            : '${_calculatedDistance!.toStringAsFixed(1)} meters'),
+                  ),
+                ),
+                // Toggle Button on the far right with rounded edges and smaller size
+                Padding(
+                  padding: const EdgeInsets.only(right: 12.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16), // Rounded edges
+                    child: ToggleButtons(
+                      isSelected: [_useYards, !_useYards],
+                      onPressed: (int index) {
+                        setState(() {
+                          _useYards = index == 0;
+                        });
+                      },
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Text(
+                            'Yards',
+                            style: TextStyle(fontSize: 12), // Smaller text size
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Text(
+                            'Meters',
+                            style: TextStyle(fontSize: 12), // Smaller text size
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
-          // Map section with rounded corners and green recenter button
+          // Map section with markers
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(12.0),
@@ -128,7 +174,7 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
                     FlutterMap(
                       mapController: _mapController,
                       options: MapOptions(
-                        center: _currentLocation ?? LatLng(29.9511, -90.0715),
+                        center: _currentLocation!,
                         zoom: 16.0,
                         onTap: (tapPosition, latLng) => _onMapTap(latLng),
                       ),
@@ -140,14 +186,13 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
                         ),
                         MarkerLayer(
                           markers: [
-                            if (_currentLocation != null)
-                              Marker(
-                                width: 40,
-                                height: 40,
-                                point: _currentLocation!,
-                                child: const Icon(Icons.person_pin_circle,
-                                    color: Colors.blue, size: 36),
-                              ),
+                            Marker(
+                              width: 40,
+                              height: 40,
+                              point: _currentLocation!,
+                              child: const Icon(Icons.person_pin_circle,
+                                  color: Colors.blue, size: 36),
+                            ),
                             if (_holePosition != null)
                               Marker(
                                 width: 40,

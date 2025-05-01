@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'tips_and_drills.dart';
 
 class HelpScreen extends StatelessWidget {
   const HelpScreen({super.key});
@@ -86,6 +87,53 @@ class HelpScreen extends StatelessWidget {
               'How do I edit and delete a player?',
               'To edit the player name: tap the name you want to change.\n'
               'To delete a player: hold down on the name you want to delete.'
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Improve Your Game',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Professional Tips & Practice Drills',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Access professional golf tips and practice drills to improve your game.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TipsAndDrillsScreen(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green[800],
+                        foregroundColor: Colors.black,
+                      ),
+                      child: const Text('View Tips & Drills'),
+                    ),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 24),
             const Text(

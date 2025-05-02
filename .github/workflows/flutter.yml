@@ -16,7 +16,7 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0' # Flutter 3.16+ includes Dart 3.7
+          flutter-version: '3.7.2' # Flutter 3.16+ includes Dart 3.7
 
       - name: Install dependencies
         run: flutter pub get

@@ -92,7 +92,7 @@ class WelcomeScreen extends StatelessWidget {
                                 ),
                               ),
                               child: const Text(
-                                'Get Started',
+                                'START',
                                 style: TextStyle(fontSize: 18),
                               ),
                             ),

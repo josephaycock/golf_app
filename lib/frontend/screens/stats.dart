@@ -23,7 +23,12 @@ class _StatsPageState extends State<StatsPage> {
     _userId = FirebaseAuth.instance.currentUser?.uid;
     if (_userId != null) {
       _loadStats();
-    } else {
+    } else{
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not logged in')),
+        );
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User not logged in')),
       );
@@ -70,6 +75,8 @@ class _StatsPageState extends State<StatsPage> {
     setState(() {
       switch (stat) {
         case 'gamesPlayed':
+           if (!increment && _playerStats.gamesPlayed <= 0) return;
+        _playerStats.gamesPlayed += increment ? 1 : -1;
           _playerStats.gamesPlayed += increment ? 1 : -1;
           break;
         case 'totalStrokes':

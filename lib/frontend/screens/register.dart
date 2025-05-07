@@ -17,10 +17,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
 
   bool _isLoading = false;
 
-  // <-- Add these visibility toggles
-  bool _showPassword = false;
-  bool _showConfirmPassword = false;
-
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -49,7 +45,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
       }
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registration failed: \${e.message}')),
+        SnackBar(content: Text('Registration failed: ${e.message}')),
       );
     } finally {
       setState(() => _isLoading = false);
@@ -102,55 +98,47 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       _passwordController,
                       'Password',
                       TextInputType.text,
-                      obscure: !_showPassword,
-                      // <-- Toggle based on _showPassword
-                      toggleVisibility: () {
-                        setState(() => _showPassword = !_showPassword);
-                      },
+                      obscure: true,
                     ),
                     const SizedBox(height: 20),
                     _buildTextField(
                       _confirmPasswordController,
                       'Confirm Password',
                       TextInputType.text,
-                      obscure: !_showConfirmPassword,
-                      // <-- Toggle based on _showConfirmPassword
-                      toggleVisibility: () {
-                        setState(() => _showConfirmPassword = !_showConfirmPassword);
-                      },
+                      obscure: true,
                     ),
                     const SizedBox(height: 20),
                     _isLoading
                         ? const CircularProgressIndicator()
                         : SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: _register,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(
-                                  246,
-                                  37,
-                                  37,
-                                  37,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 50,
-                                  vertical: 17,
-                                ),
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _register,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                246,
+                                37,
+                                37,
+                                37,
                               ),
-                              child: const Text(
-                                'Sign Up',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 50,
+                                vertical: 17,
+                              ),
+                            ),
+                            child: Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
                             ),
                           ),
+                        ),
                   ],
                 ),
               ),
@@ -166,7 +154,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
     String labelText,
     TextInputType keyboardType, {
     bool obscure = false,
-    VoidCallback? toggleVisibility, // <-- Add visibility toggle handler
   }) {
     return TextFormField(
       controller: controller,
@@ -179,20 +166,11 @@ class _RegisterWidgetState extends State<RegisterWidget> {
           horizontal: 20.0,
         ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30.0)),
-        // <-- Add eye icon for password fields
-        suffixIcon: (labelText == 'Password' || labelText == 'Confirm Password')
-            ? IconButton(
-                icon: Icon(
-                  obscure ? Icons.visibility_off : Icons.visibility,
-                ),
-                onPressed: toggleVisibility,
-              )
-            : null,
       ),
       keyboardType: keyboardType,
       obscureText: obscure,
       validator: (value) {
-        if (value == null || value.isEmpty) return 'Enter your \$labelText';
+        if (value == null || value.isEmpty) return 'Enter your $labelText';
         if (labelText == 'Email' && !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
           return 'Enter a valid email';
         }

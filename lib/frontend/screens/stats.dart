@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../backend/services/firebase.dart';
 import '../../backend/services/models/player_stats.dart';
@@ -21,18 +20,18 @@ class _StatsPageState extends State<StatsPage> {
   @override
   void initState() {
     super.initState();
-    _userId = FirebaseAuth.instance.currentUser?.uid;
-    if (_userId != null) {
-      _loadStats();
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User not logged in')),
-        );
-      });
-      _isLoading = false;
-    }
-  }
+ _userId = FirebaseAuth.instance.currentUser?.uid;
+if (_userId != null) {
+  _loadStats();
+} else {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('User not logged in')),
+    );
+  });
+  _isLoading = false;
+ }
+}
 
   Future<void> _loadStats() async {
     try {
@@ -49,7 +48,7 @@ class _StatsPageState extends State<StatsPage> {
         SnackBar(content: Text('Failed to load stats: $e')),
       );
     } finally {
-      setState(() => isLoading = false);
+      setState(() => _isLoading = false);
     }
   }
 
@@ -73,36 +72,24 @@ class _StatsPageState extends State<StatsPage> {
     setState(() {
       switch (stat) {
         case 'gamesPlayed':
-          if (!increment && _playerStats.gamesPlayed <= 0) return;
-          _playerStats.gamesPlayed += increment ? 1 : -1;
+           if (!increment && _playerStats.gamesPlayed <= 0) return;
+        _playerStats.gamesPlayed += increment ? 1 : -1;
           break;
         case 'totalStrokes':
-          if (!increment && _playerStats.totalStrokes <= 0) return;
           _playerStats.totalStrokes += increment ? 1 : -1;
           break;
         case 'birdies':
-          if (!increment && _playerStats.birdies <= 0) return;
           _playerStats.birdies += increment ? 1 : -1;
           break;
         case 'pars':
-          if (!increment && _playerStats.pars <= 0) return;
           _playerStats.pars += increment ? 1 : -1;
           break;
         case 'bogeys':
-          if (!increment && _playerStats.bogeys <= 0) return;
           _playerStats.bogeys += increment ? 1 : -1;
           break;
       }
       _statsChanged = true;
     });
-  }
-
-  int _getMaxStatValue() {
-    return [
-      _playerStats.birdies,
-      _playerStats.pars,
-      _playerStats.bogeys,
-    ].reduce((a, b) => a > b ? a : b);
   }
 
   Future<bool> _confirmDiscardChanges() async {
@@ -132,11 +119,10 @@ class _StatsPageState extends State<StatsPage> {
     return WillPopScope(
       onWillPop: _confirmDiscardChanges,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Player Stats',
-              style: TextStyle(
-                color: Colors.white,
-              )),
+        appBar: AppBar(title: const Text('Player Stats',
+            style: TextStyle(
+              color: Colors.white,
+            )),
           centerTitle: true,
           backgroundColor: Colors.green[800],
           automaticallyImplyLeading: false,
@@ -147,83 +133,6 @@ class _StatsPageState extends State<StatsPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    // 📊 Add bar chart here
-                    SizedBox(
-                      height: 220,
-                      child: BarChart(
-                        BarChartData(
-                          alignment: BarChartAlignment.spaceAround,
-                          maxY: (_getMaxStatValue() + 5).toDouble(),
-                          barTouchData: BarTouchData(enabled: true),
-                          titlesData: FlTitlesData(
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: true),
-                            ),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitleWidget: (value, _) {
-                                  final style = TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  );
-                                  switch (value.toInt()) {
-                                    case 0:
-                                      return Text('Birdies', style: style);
-                                    case 1:
-                                      return Text('Pars', style: style);
-                                    case 2:
-                                      return Text('Bogeys', style: style);
-                                    default:
-                                      return const SizedBox.shrink();
-                                  }
-                                },
-                              ),
-                            ),
-                            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                          ),
-                          gridData: FlGridData(show: true),
-                          borderData: FlBorderData(show: false),
-                          barGroups: [
-                            BarChartGroupData(
-                              x: 0,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: _playerStats.birdies.toDouble(),
-                                  width: 20,
-                                  color: Colors.orange,
-                                ),
-                              ],
-                            ),
-                            BarChartGroupData(
-                              x: 1,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: _playerStats.pars.toDouble(),
-                                  width: 20,
-                                  color: Colors.green,
-                                ),
-                              ],
-                            ),
-                            BarChartGroupData(
-                              x: 2,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: _playerStats.bogeys.toDouble(),
-                                  width: 20,
-                                  color: Colors.red,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // 🟩 Stat Rows
                     StatRow(
                       title: 'Games Played',
                       value: _playerStats.gamesPlayed,
@@ -265,7 +174,7 @@ class _StatsPageState extends State<StatsPage> {
                     ElevatedButton.icon(
                       onPressed: () {
                         setState(() {
-                          _playeStats = PlayerStats();
+                          _playerStats = PlayerStats(); // Assumes default constructor will reset all
                           _statsChanged = true;
                         });
                       },

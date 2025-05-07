@@ -1,7 +1,12 @@
 // Golf Scoreboard with Stats Summary (Phase 3 Complete)
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../backend/services/firebase.dart';
+import '../../backend/services/models/player_stats.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 void main() => runApp(
   MaterialApp(
@@ -22,6 +27,7 @@ class GolfScoreBoard extends StatefulWidget {
 }
 
 class _GolfScoreBoardState extends State<GolfScoreBoard> {
+   final FirebaseService _firebaseService = FirebaseService();
   bool hasStartedRound = false;
   String selectedCourse = 'Course A';
   String gameFormat = 'Traditional';
@@ -65,7 +71,34 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
       roundData.where((d) => d['drive'] == dir && d['score'] > 0).length;
   int _countSandSave() =>
       roundData.where((d) => d['sand'] == true && d['score'] > 0).length;
+Future<void> _updateStatsAfterRound() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return;
 
+    int totalStrokes = _sum('score');
+    int birdies = roundData.where((d) => d['score'] == 3).length;
+    int pars = roundData.where((d) => d['score'] == 4).length;
+    int bogeys = roundData.where((d) => d['score'] == 5).length;
+
+    final newStats = {
+      'gamesPlayed': FieldValue.increment(1),
+      'totalStrokes': FieldValue.increment(totalStrokes),
+      'birdies': FieldValue.increment(birdies),
+      'pars': FieldValue.increment(pars),
+      'bogeys': FieldValue.increment(bogeys),
+    };
+
+    try {
+      await _firebaseService.updatePlayerStats(userId, newStats);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Stats updated successfully!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update stats: $e')),
+      );
+    }
+  }
   Widget _buildSummary() {
     final played = _countPlayed();
     return Column(
@@ -90,21 +123,23 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
         const SizedBox(height: 16),
         Center(
           child: ElevatedButton(
-            onPressed:
-                () => setState(() {
-                  hasStartedRound = false;
-                  showSummary = false;
-                  roundData = List.generate(
-                    18,
-                    (i) => {
-                      'score': 0,
-                      'putts': 0,
-                      'penalty': 0,
-                      'drive': 'Center',
-                      'sand': false,
-                    },
-                  );
-                }),
+           onPressed: () async {
+  await _updateStatsAfterRound(); // 🔥 Update Firebase stats
+  setState(() {
+    hasStartedRound = false;
+    showSummary = false;
+    roundData = List.generate(
+      18,
+      (i) => {
+        'score': 0,
+        'putts': 0,
+        'penalty': 0,
+        'drive': 'Center',
+        'sand': false,
+      },
+    );
+  });
+},
             child: const Text('End Round'),
           ),
         ),

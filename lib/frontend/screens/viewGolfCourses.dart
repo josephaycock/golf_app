@@ -16,7 +16,7 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
   bool _useYards = true; // <-- Toggle between yards/meters
 
   // LSU Golf Course Hole 1
-  LatLng? _currentLocation = LatLng(30.399895, -91.184794);
+  final LatLng _currentLocation = LatLng(30.399895, -91.184794);
   LatLng? _holePosition;
 
   final MapController _mapController = MapController();
@@ -62,8 +62,8 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
 
     if (_currentLocation != null) {
       double distanceInMeters = Geolocator.distanceBetween(
-        _currentLocation!.latitude,
-        _currentLocation!.longitude,
+        _currentLocation.latitude,
+        _currentLocation.longitude,
         tappedLocation.latitude,
         tappedLocation.longitude,
       );
@@ -75,7 +75,7 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
 
   void _recenterToUser() {
     if (_currentLocation != null) {
-      _mapController.move(_currentLocation!, 19.0);
+      _mapController.move(_currentLocation, 19.0);
     }
   }
 
@@ -189,7 +189,7 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
                             Marker(
                               width: 40,
                               height: 40,
-                              point: _currentLocation!,
+                              point: _currentLocation,
                               child: const Icon(Icons.person_pin_circle,
                                   color: Colors.blue, size: 36),
                             ),

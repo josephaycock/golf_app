@@ -233,7 +233,13 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Golf Scoreboard'),
+        automaticallyImplyLeading: false,
+        title: const Text('Golf Scoreboard',
+            style: TextStyle(
+              color: Colors.white,
+            )),
+        centerTitle: true,
+        backgroundColor: Colors.green[800],
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

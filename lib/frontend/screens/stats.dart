@@ -116,7 +116,14 @@ class _StatsPageState extends State<StatsPage> {
     return WillPopScope(
       onWillPop: _confirmDiscardChanges,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Player Stats')),
+        appBar: AppBar(title: const Text('Player Stats',
+            style: TextStyle(
+              color: Colors.white,
+            )),
+          centerTitle: true,
+          backgroundColor: Colors.green[800],
+          automaticallyImplyLeading: false,
+        ),
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : Padding(

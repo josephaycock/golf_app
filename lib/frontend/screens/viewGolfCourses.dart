@@ -87,7 +87,14 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
     super.build(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('View Golf Course')),
+      appBar: AppBar(title: const Text('View Golf Course',
+          style: TextStyle(
+            color: Colors.white,
+          )),
+        centerTitle: true,
+        backgroundColor: Colors.green[800],
+        automaticallyImplyLeading: false,
+      ),
       body: Column(
         children: [
           // Score UI

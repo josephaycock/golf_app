@@ -15,4 +15,7 @@ class FirebaseService {
       return null;
     }
   }
+  Future<void> updatePlayerStats(String userId, Map<String, dynamic> stats) async {
+    await _firestore.collection('playerStats').doc(userId).set(stats, SetOptions(merge: true));
+  }
 }

@@ -4,7 +4,7 @@ import '../../backend/services/firebase.dart';
 import '../../backend/services/models/player_stats.dart';
 
 class StatsPage extends StatefulWidget {
-  const StatsPage({Key? key}) : super(key: key);
+  const StatsPage({super.key});
 
   @override
   _StatsPageState createState() => _StatsPageState();
@@ -20,16 +20,18 @@ class _StatsPageState extends State<StatsPage> {
   @override
   void initState() {
     super.initState();
-    _userId = FirebaseAuth.instance.currentUser?.uid;
-    if (_userId != null) {
-      _loadStats();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User not logged in')),
-      );
-      _isLoading = false;
-    }
-  }
+ _userId = FirebaseAuth.instance.currentUser?.uid;
+if (_userId != null) {
+  _loadStats();
+} else {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('User not logged in')),
+    );
+  });
+  _isLoading = false;
+ }
+}
 
   Future<void> _loadStats() async {
     try {
@@ -70,7 +72,8 @@ class _StatsPageState extends State<StatsPage> {
     setState(() {
       switch (stat) {
         case 'gamesPlayed':
-          _playerStats.gamesPlayed += increment ? 1 : -1;
+           if (!increment && _playerStats.gamesPlayed <= 0) return;
+        _playerStats.gamesPlayed += increment ? 1 : -1;
           break;
         case 'totalStrokes':
           _playerStats.totalStrokes += increment ? 1 : -1;
@@ -198,12 +201,12 @@ class StatRow extends StatelessWidget {
   final VoidCallback onDecrement;
 
   const StatRow({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     required this.onIncrement,
     required this.onDecrement,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

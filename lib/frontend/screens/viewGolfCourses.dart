@@ -16,7 +16,7 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
   bool _useYards = true; // <-- Toggle between yards/meters
 
   // LSU Golf Course Hole 1
-  LatLng? _currentLocation = LatLng(30.399895, -91.184794);
+  final LatLng _currentLocation = LatLng(30.399895, -91.184794);
   LatLng? _holePosition;
 
   final MapController _mapController = MapController();
@@ -31,7 +31,7 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
     await _ensureLocationPermission();
 
     // Move to hardcoded location immediately
-    _mapController.move(_currentLocation!, 19.0);
+    _mapController.move(_currentLocation, 19.0);
 
     // Still try to get user's real GPS position (not used now)
     try {
@@ -60,24 +60,20 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
       _holePosition = tappedLocation;
     });
 
-    if (_currentLocation != null) {
-      double distanceInMeters = Geolocator.distanceBetween(
-        _currentLocation!.latitude,
-        _currentLocation!.longitude,
-        tappedLocation.latitude,
-        tappedLocation.longitude,
-      );
-      setState(() {
-        _calculatedDistance = distanceInMeters;
-      });
+    double distanceInMeters = Geolocator.distanceBetween(
+      _currentLocation.latitude,
+      _currentLocation.longitude,
+      tappedLocation.latitude,
+      tappedLocation.longitude,
+    );
+    setState(() {
+      _calculatedDistance = distanceInMeters;
+    });
     }
-  }
 
   void _recenterToUser() {
-    if (_currentLocation != null) {
-      _mapController.move(_currentLocation!, 19.0);
+    _mapController.move(_currentLocation, 19.0);
     }
-  }
 
   @override
   bool get wantKeepAlive => true;
@@ -181,7 +177,7 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
                     FlutterMap(
                       mapController: _mapController,
                       options: MapOptions(
-                        center: _currentLocation!,
+                        center: _currentLocation,
                         zoom: 16.0,
                         onTap: (tapPosition, latLng) => _onMapTap(latLng),
                       ),
@@ -196,7 +192,7 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
                             Marker(
                               width: 40,
                               height: 40,
-                              point: _currentLocation!,
+                              point: _currentLocation,
                               child: const Icon(Icons.person_pin_circle,
                                   color: Colors.blue, size: 36),
                             ),

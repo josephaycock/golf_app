@@ -31,7 +31,7 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 30),
                   const Text(
                     'Welcome to BirdieBoard!',
-                    style: TextStyle(
+                    style: TextStyle( 
                       fontSize: 34,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,

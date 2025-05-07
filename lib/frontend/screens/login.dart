@@ -18,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> _login() async {
+    print("🔐 Login attempt started");
     try {
       setState(() => _isLoading = true);
 
@@ -26,13 +27,16 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text.trim(),
       );
 
+      print("✅ Login successful");
+
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/nav');
       }
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Login failed: ${e.message}')));
+    } on FirebaseAuthException {
+      print("❌ Login failed: \${e.code} - \${e.message}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed: \${e.message}')),
+      );
     } finally {
       setState(() => _isLoading = false);
     }
@@ -48,7 +52,14 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset('assets/images/registerbg.png', fit: BoxFit.cover),
+          Image.asset(
+            'assets/images/registerbg.png',
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              print("❌ Error loading registerbg.png");
+              return Container(color: Colors.grey[300]);
+            },
+          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: SingleChildScrollView(
@@ -77,34 +88,32 @@ class _LoginScreenState extends State<LoginScreen> {
                   _isLoading
                       ? const CircularProgressIndicator()
                       : SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _login,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(
-                              246,
-                              37,
-                              37,
-                              37,
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              print("🚨 Login button pressed");
+                              _login();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(246, 37, 37, 37),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 50,
+                                vertical: 17,
+                              ),
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 50,
-                              vertical: 17,
-                            ),
-                          ),
-                          child: const Text(
-                            'Log In',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                            child: const Text(
+                              'Log In',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
-                      ),
                 ],
               ),
             ),

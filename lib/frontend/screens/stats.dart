@@ -4,7 +4,7 @@ import '../../backend/services/firebase.dart';
 import '../../backend/services/models/player_stats.dart';
 
 class StatsPage extends StatefulWidget {
-  const StatsPage({Key? key}) : super(key: key);
+  const StatsPage({super.key});
 
   @override
   _StatsPageState createState() => _StatsPageState();
@@ -91,11 +91,11 @@ class StatRow extends StatelessWidget {
   final VoidCallback onTap;
 
   const StatRow({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

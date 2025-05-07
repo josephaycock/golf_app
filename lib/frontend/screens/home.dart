@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Title logo
-                  Image.asset('assets/images/BirdieBoard.png', width: 250),
+                Image.asset('assets/images/BirdieBoard.png', width: 250),
                   const SizedBox(height: 30),
                   const Text(
                     'Welcome to BirdieBoard!',
@@ -93,7 +93,7 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 40),
 
                   // Bottom Logo
-                  Image.asset('assets/images/BirdieBoard.png', width: 100),
+              Image.asset('assets/images/BirdieBoard.png', width: 100),
                   const SizedBox(height: 20),
                   const Text(
                     'BirdieBoard — Master Your Golf Game.',

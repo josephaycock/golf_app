@@ -328,7 +328,7 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
               ),
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }
@@ -368,7 +368,7 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
               child: Text('', style: TextStyle(color: Colors.white)),
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }

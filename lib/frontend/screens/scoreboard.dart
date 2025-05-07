@@ -1,19 +1,18 @@
+// Golf Scoreboard with Stats Summary (Phase 3 Complete)
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Colors.black,
-        appBarTheme: AppBarTheme(backgroundColor: Colors.black),
-        textTheme: ThemeData.dark().textTheme.apply(bodyColor: Colors.white),
-      ),
-      home: GolfScoreBoard(),
+void main() => runApp(
+  MaterialApp(
+    theme: ThemeData.dark().copyWith(
+      scaffoldBackgroundColor: Colors.black,
+      appBarTheme: AppBarTheme(backgroundColor: Colors.black),
+      textTheme: ThemeData.dark().textTheme.apply(bodyColor: Colors.white),
     ),
-  );
-}
+    home: GolfScoreBoard(),
+  ),
+);
 
 class GolfScoreBoard extends StatefulWidget {
   const GolfScoreBoard({super.key});
@@ -23,375 +22,257 @@ class GolfScoreBoard extends StatefulWidget {
 }
 
 class _GolfScoreBoardState extends State<GolfScoreBoard> {
-  final List<String> holeHeaders = [
-    ...List.generate(9, (i) => 'H${i + 1}'),
-    'Total',
-    ...List.generate(9, (i) => 'H${i + 10}'),
-    'Total'
-  ];
-//needs to be updated per course we add
-  final List<List<String>> teeData = [
-    [
-      'Black Tee', '###', '###', '###', '###', '###', '###', '###', '###', '###', 'Black Tee', '###', '###', '###', '###', '###', '###', '###', '###', '###', '###'
-    ],
-    [
-      'Blue Tee', '###', '###', '###', '###', '###', '###', '###', '###', '###', 'Blue Tee', '###', '###', '###', '###', '###', '###', '###', '###', '###', '###'
-    ],
-    [
-      'White Tee', '###', '###', '###', '###', '###', '###', '###', '###', '###', 'White Tee', '###', '###', '###', '###', '###', '###', '###', '###', '###', '###'
-    ],
-    [
-      'Red Tee', '###', '###', '###', '###', '###', '###', '###', '###', '###', 'Red Tee', '###', '###', '###', '###', '###', '###', '###', '###', '###', '###'
-    ],
-    [
-      'Par', '#', '#', '#', '#', '#', '#', '#', '#', '#', 'Par', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'
-    ]
-  ];
+  bool hasStartedRound = false;
+  String selectedCourse = 'Course A';
+  String gameFormat = 'Traditional';
+  int currentHole = 1;
+  bool showSummary = false;
 
-  List<String> playerNames = List.generate(5, (index) => 'Player ${index + 1}');
-  List<List<String>> playerScores = List.generate(5, (_) => List.generate(18, (_) => ''));
+  List<String> playerNames = ['Player 1'];
+  List<Map<String, dynamic>> roundData = List.generate(
+    18,
+    (i) => {
+      'score': 0,
+      'putts': 0,
+      'penalty': 0,
+      'drive': 'Center',
+      'sand': false,
+    },
+  );
 
-  @override
-  void initState() {
-    super.initState();
-    _loadGame();
+  void _startRound() {
+    setState(() {
+      hasStartedRound = true;
+      showSummary = false;
+      currentHole = 1;
+    });
   }
 
-  Future<void> _loadGame() async {
+  void _updateStat(int hole, String key, dynamic value) {
+    setState(() => roundData[hole - 1][key] = value);
+    _saveRound();
+  }
+
+  Future<void> _saveRound() async {
     final prefs = await SharedPreferences.getInstance();
-    final savedNames = prefs.getStringList('playerNames');
-    final savedScores = prefs.getString('playerScores');
-    
-    if (savedNames != null) {
-      setState(() {
-        playerNames = savedNames;
-      });
-    }
-    
-    if (savedScores != null) {
-      setState(() {
-        playerScores = List<List<String>>.from(
-          jsonDecode(savedScores).map((list) => List<String>.from(list))
-        );
-      });
-    }
+    await prefs.setString('roundData', jsonEncode(roundData));
   }
 
-  Future<void> _saveGame() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('playerNames', playerNames);
-    await prefs.setString('playerScores', jsonEncode(playerScores));
+  int _countPlayed() => roundData.where((d) => d['score'] > 0).length;
+  int _sum(String key) =>
+      roundData.fold(0, (sum, e) => sum + ((e[key] ?? 0) as int));
+  int _countDrive(String dir) =>
+      roundData.where((d) => d['drive'] == dir && d['score'] > 0).length;
+  int _countSandSave() =>
+      roundData.where((d) => d['sand'] == true && d['score'] > 0).length;
+
+  Widget _buildSummary() {
+    final played = _countPlayed();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Round Summary',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        Text('Holes Played: $played'),
+        Text('Total Score: ${_sum('score')}'),
+        Text('Total Putts: ${_sum('putts')}'),
+        Text('Total Penalties: ${_sum('penalty')}'),
+        const SizedBox(height: 12),
+        Text('Drive Accuracy:'),
+        Text('  Left: ${_countDrive('Left')}'),
+        Text('  Center: ${_countDrive('Center')}'),
+        Text('  Right: ${_countDrive('Right')}'),
+        const SizedBox(height: 12),
+        Text('Sand Saves: ${_countSandSave()}'),
+        const SizedBox(height: 16),
+        Center(
+          child: ElevatedButton(
+            onPressed:
+                () => setState(() {
+                  hasStartedRound = false;
+                  showSummary = false;
+                  roundData = List.generate(
+                    18,
+                    (i) => {
+                      'score': 0,
+                      'putts': 0,
+                      'penalty': 0,
+                      'drive': 'Center',
+                      'sand': false,
+                    },
+                  );
+                }),
+            child: const Text('End Round'),
+          ),
+        ),
+      ],
+    );
   }
 
-  void _showNameDialog(int index) {
-    final TextEditingController controller = TextEditingController(text: playerNames[index]);
-    
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Edit Player Name'),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              hintText: 'Enter player name',
-              border: OutlineInputBorder(),
+  Widget _buildSlider(
+    String label,
+    int value,
+    Function(int) onChanged, {
+    int max = 12,
+  }) {
+    return Column(
+      children: [
+        Text('$label: $value'),
+        SizedBox(
+          height: 40,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: max,
+            itemBuilder:
+                (_, i) => GestureDetector(
+                  onTap: () => onChanged(i + 1),
+                  child: Container(
+                    width: 40,
+                    margin: const EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: (i + 1) == value ? Colors.green : Colors.grey[800],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(child: Text('${i + 1}')),
+                  ),
+                ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatInput() {
+    final holeStats = roundData[currentHole - 1];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Hole $currentHole', style: const TextStyle(fontSize: 20)),
+        const SizedBox(height: 12),
+        _buildSlider(
+          'Score',
+          holeStats['score'],
+          (v) => _updateStat(currentHole, 'score', v),
+        ),
+        _buildSlider(
+          'Putts',
+          holeStats['putts'],
+          (v) => _updateStat(currentHole, 'putts', v),
+          max: 6,
+        ),
+        _buildSlider(
+          'Penalties',
+          holeStats['penalty'],
+          (v) => _updateStat(currentHole, 'penalty', v),
+          max: 4,
+        ),
+        const SizedBox(height: 12),
+        Text('Drive Accuracy'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children:
+              ['Left', 'Center', 'Right']
+                  .map(
+                    (d) => ChoiceChip(
+                      label: Text(d),
+                      selected: holeStats['drive'] == d,
+                      onSelected: (_) => _updateStat(currentHole, 'drive', d),
+                    ),
+                  )
+                  .toList(),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            const Text('Sand Save: '),
+            Switch(
+              value: holeStats['sand'],
+              onChanged: (v) => _updateStat(currentHole, 'sand', v),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ElevatedButton(
+              onPressed:
+                  currentHole > 1 ? () => setState(() => currentHole--) : null,
+              child: const Text('Previous'),
+            ),
+            ElevatedButton(
+              onPressed:
+                  currentHole < 18 ? () => setState(() => currentHole++) : null,
+              child: const Text('Next'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: ElevatedButton(
+            onPressed: () => setState(() => showSummary = true),
+            child: const Text('Finish Round'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSetupScreen() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Select Course:', style: TextStyle(fontSize: 18)),
+          DropdownButton<String>(
+            value: selectedCourse,
+            items:
+                ['Course A', 'Course B'].map((course) {
+                  return DropdownMenuItem(value: course, child: Text(course));
+                }).toList(),
+            onChanged: (val) => setState(() => selectedCourse = val!),
+          ),
+          const SizedBox(height: 16),
+          const Text('Game Format:', style: TextStyle(fontSize: 18)),
+          Text(
+            '$gameFormat - Keep track of score, putts, penalties, drives, and sand saves.',
+          ),
+          const Spacer(),
+          Center(
+            child: ElevatedButton(
+              onPressed: _startRound,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 12,
+                ),
+              ),
+              child: const Text('Start Round'),
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  playerNames[index] = controller.text.isEmpty ? 'Player ${index + 1}' : controller.text;
-                });
-                _saveGame();
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[800],
-                foregroundColor: Colors.black,
-              ),
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showNewGameDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Start New Game'),
-          content: const Text('Are you sure you want to start a new game? All current scores will be lost.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  playerNames = List.generate(5, (index) => 'Player ${index + 1}');
-                  playerScores = List.generate(5, (_) => List.generate(18, (_) => ''));
-                });
-                _saveGame();
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[800],
-                foregroundColor: Colors.black,
-              ),
-              child: const Text('New Game'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showAddPlayerDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        final TextEditingController controller = TextEditingController();
-        return AlertDialog(
-          title: const Text('Add New Player'),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              hintText: 'Enter player name',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  playerNames.add(controller.text.isEmpty ? 'Player ${playerNames.length + 1}' : controller.text);
-                  playerScores.add(List.generate(18, (_) => ''));
-                });
-                _saveGame();
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[800],
-                foregroundColor: Colors.black,
-              ),
-              child: const Text('Add'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _removePlayer(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Remove Player'),
-          content: Text('Are you sure you want to remove ${playerNames[index]}?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  playerNames.removeAt(index);
-                  playerScores.removeAt(index);
-                });
-                _saveGame();
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Remove'),
-            ),
-          ],
-        );
-      },
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Golf Scoreboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _showNewGameDialog,
-            tooltip: 'New Game',
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildTable(teeData),
-                  const SizedBox(height: 8),
-                  _buildPlayerHeaderRow(),
-                  ...List.generate(playerNames.length, (index) => _buildPlayerRow(index)),
-                  _buildAddPlayerButton(),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTable(List<List<String>> data) {
-    return Column(
-      children: data.map((row) {
-        return Row(
-          children: row.asMap().entries.map((entry) {
-            int i = entry.key;
-            String cell = entry.value;
-            bool isTotal = holeHeaders.contains('Total') && (holeHeaders[i % holeHeaders.length] == 'Total');
-            return Container(
-              width: isTotal ? 60 : 50,
-              margin: const EdgeInsets.all(1),
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white),
-                color: Colors.black,
-              ),
-              child: Center(
-                child: Text(
-                  cell,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ),
-            );
-          }).toList(),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildPlayerHeaderRow() {
-    return Row(
-      children: [
-        Container(
-          width: 60,
-          margin: const EdgeInsets.all(1),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.white),
-            color: Colors.black,
-          ),
-          child: const Center(
-            child: Text('', style: TextStyle(color: Colors.white)),
-          ),
-        ),
-        ...holeHeaders.map((label) {
-          bool isTotal = label == 'Total';
-          return Container(
-            width: isTotal ? 60 : 50,
-            margin: const EdgeInsets.all(1),
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.white),
-              color: Colors.black,
-            ),
-            child: Center(
-              child: Text(
-                label,
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-            ),
-          );
-        }).toList(),
-      ],
-    );
-  }
-
-  Widget _buildPlayerRow(int index) {
-    return Row(
-      children: [
-        GestureDetector(
-          onTap: () => _showNameDialog(index),
-          onLongPress: () => _removePlayer(index),
-          child: Container(
-            width: 60,
-            margin: const EdgeInsets.all(1),
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.white),
-              color: Colors.black,
-            ),
-            child: Center(
-              child: Text(
-                playerNames[index],
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-        ),
-        ...holeHeaders.map((_) {
-          return Container(
-            width: 50,
-            margin: const EdgeInsets.all(1),
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.white),
-              color: Colors.black,
-            ),
-            child: const Center(
-              child: Text('', style: TextStyle(color: Colors.white)),
-            ),
-          );
-        }).toList(),
-      ],
-    );
-  }
-
-  Widget _buildAddPlayerButton() {
-    return GestureDetector(
-      onTap: _showAddPlayerDialog,
-      child: Container(
-        width: 60,
-        margin: const EdgeInsets.all(1),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white),
-          color: Colors.black,
-        ),
-        child: const Center(
-          child: Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
-        ),
+      appBar: AppBar(title: const Text('Golf Scorecard')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child:
+            hasStartedRound
+                ? (showSummary
+                    ? _buildSummary()
+                    : SingleChildScrollView(child: _buildStatInput()))
+                : _buildSetupScreen(),
       ),
     );
   }
 }
-

@@ -119,14 +119,13 @@ if (_userId != null) {
     return WillPopScope(
       onWillPop: _confirmDiscardChanges,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Player Stats',
-            style: TextStyle(
-              color: Colors.white,
-            )),
+        appBar: AppBar(
+          title: Image.asset('assets/images/titleImage.png', height: 100),
           centerTitle: true,
-          backgroundColor: Colors.green[800],
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
           automaticallyImplyLeading: false,
         ),
+
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : Padding(

@@ -54,15 +54,12 @@ class HelpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Help & Support',
-            style: TextStyle(
-              color: Colors.white,
-            )),
-        centerTitle: true,
-        backgroundColor: Colors.green[800],
-        automaticallyImplyLeading: false,
-      ),
+              appBar: AppBar(
+          title: Image.asset('assets/images/titleImage.png', height: 100),
+          centerTitle: true,
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+          automaticallyImplyLeading: false,
+        ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

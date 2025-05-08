@@ -309,10 +309,12 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Golf Scorecard'),
-        // Remove back button when in a round
+        title: Image.asset('assets/images/titleImage.png', height: 100),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         automaticallyImplyLeading: false,
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child:

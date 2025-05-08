@@ -12,11 +12,10 @@ class ViewGolfCourses extends StatefulWidget {
 
 class _ViewGolfCoursesState extends State<ViewGolfCourses>
     with AutomaticKeepAliveClientMixin {
-  int _currentScore = 0;
   double? _calculatedDistance;
-  bool _useYards = true; // <-- Toggle between yards/meters
+  bool _useYards = true;
+  bool _isMale = true; // To track gender selection
 
-  // LSU Golf Course Hole 1
   final LatLng _currentLocation = LatLng(30.399895, -91.184794);
   LatLng? _holePosition;
 
@@ -30,11 +29,8 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
 
   Future<void> _initializeLocation() async {
     await _ensureLocationPermission();
-
-    // Move to hardcoded location immediately
     _mapController.move(_currentLocation, 19.0);
 
-    // Still try to get user's real GPS position (not used now)
     try {
       final position = await Geolocator.getCurrentPosition();
       print('User location (GPS): ${position.latitude}, ${position.longitude}');
@@ -60,16 +56,12 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
   void _onMapTap(LatLng tappedLocation) {
     setState(() {
       _holePosition = tappedLocation;
-    });
-
-    double distanceInMeters = Geolocator.distanceBetween(
-      _currentLocation.latitude,
-      _currentLocation.longitude,
-      tappedLocation.latitude,
-      tappedLocation.longitude,
-    );
-    setState(() {
-      _calculatedDistance = distanceInMeters;
+      _calculatedDistance = Geolocator.distanceBetween(
+        _currentLocation.latitude,
+        _currentLocation.longitude,
+        tappedLocation.latitude,
+        tappedLocation.longitude,
+      );
     });
   }
 
@@ -79,6 +71,90 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
 
   @override
   bool get wantKeepAlive => true;
+
+  String _recommendClub() {
+    if (_calculatedDistance == null) {
+      return '';
+    }
+
+    // Convert distance to yards for easier interpretation
+    double distanceInYards = _calculatedDistance! / 1.09361;
+
+    String clubRecommendation;
+
+    // Male distance recommendations
+    if (_isMale) {
+      if (distanceInYards < 20){
+        clubRecommendation = 'Putter';
+      }
+      else if (distanceInYards < 80) {
+        clubRecommendation = 'Lob Wedge';
+      } else if (distanceInYards < 95) {
+        clubRecommendation = 'Sand Wedge';
+      } else if (distanceInYards < 110) {
+        clubRecommendation = 'Pitching Wedge';
+      } else if (distanceInYards < 120) {
+        clubRecommendation = '9-Iron';
+      } else if (distanceInYards < 130) {
+        clubRecommendation = '8-Iron';
+      } else if (distanceInYards < 140) {
+        clubRecommendation = '7-Iron';
+      } else if (distanceInYards < 150) {
+        clubRecommendation = '6-Iron';
+      } else if (distanceInYards < 160) {
+        clubRecommendation = '5-Iron';
+      } else if (distanceInYards < 170) {
+        clubRecommendation = '4-Iron';
+      } else if (distanceInYards < 180) {
+        clubRecommendation = '3-Iron';
+      } else if (distanceInYards < 190) {
+        clubRecommendation = '3-Hybrid';
+      } else if (distanceInYards < 200) {
+        clubRecommendation = '5-Wood';
+      } else if (distanceInYards < 210) {
+        clubRecommendation = '3-Wood';
+      } else {
+        clubRecommendation = 'Driver';
+      }
+    } 
+    // Female distance recommendations
+    else {
+      if (distanceInYards < 20){
+        clubRecommendation = 'Putter';
+      }
+      else if (distanceInYards < 35) {
+        clubRecommendation = 'Lob Wedge';
+      } else if (distanceInYards < 40) {
+        clubRecommendation = 'Sand Wedge';
+      } else if (distanceInYards < 50) {
+        clubRecommendation = 'Pitching Wedge';
+      } else if (distanceInYards < 60) {
+        clubRecommendation = '9-Iron';
+      } else if (distanceInYards < 70) {
+        clubRecommendation = '8-Iron';
+      } else if (distanceInYards < 80) {
+        clubRecommendation = '7-Iron';
+      } else if (distanceInYards < 90) {
+        clubRecommendation = '6-Iron';
+      } else if (distanceInYards < 100) {
+        clubRecommendation = '5-Iron';
+      } else if (distanceInYards < 110) {
+        clubRecommendation = '4-Iron';
+      } else if (distanceInYards < 120) {
+        clubRecommendation = '3-Iron';
+      } else if (distanceInYards < 130) {
+        clubRecommendation = '3-Hybrid';
+      } else if (distanceInYards < 140) {
+        clubRecommendation = '5-Wood';
+      } else if (distanceInYards < 150) {
+        clubRecommendation = '3-Wood';
+      } else {
+        clubRecommendation = 'Driver';
+      }
+    }
+
+    return clubRecommendation;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,59 +172,12 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
           Positioned.fill(
             child: Image.asset('assets/images/greenbg.png', fit: BoxFit.cover),
           ),
-
           Column(
             children: [
+              // Distance to Hole card (now first)
               Card(
                 elevation: 6,
-                margin: const EdgeInsets.all(12),
-                color: Colors.white,
-                child: ListTile(
-                  title: const Text('Current Score'),
-                  subtitle: Text('$_currentScore'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Material(
-                        elevation: 2,
-                        shape: CircleBorder(),
-                        child: Container(
-                          padding: const EdgeInsets.all(0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            icon: const Icon(Icons.remove),
-                            iconSize: 16,
-                            onPressed: () => setState(() => _currentScore--),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Material(
-                        elevation: 2,
-                        shape: CircleBorder(),
-                        child: Container(
-                          padding: const EdgeInsets.all(0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            icon: const Icon(Icons.add),
-                            iconSize: 16,
-                            onPressed: () => setState(() => _currentScore++),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Card(
-                elevation: 6,
-                margin: const EdgeInsets.symmetric(horizontal: 12),
+                margin: const EdgeInsets.fromLTRB(12, 12, 12, 6),
                 color: Colors.white,
                 child: Row(
                   children: [
@@ -159,8 +188,8 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
                           _calculatedDistance == null
                               ? 'Tap the map to place the flag'
                               : _useYards
-                              ? '${(_calculatedDistance! / 1.09361).toStringAsFixed(1)} yards'
-                              : '${_calculatedDistance!.toStringAsFixed(1)} meters',
+                                  ? '${(_calculatedDistance! / 1.09361).toStringAsFixed(1)} yards'
+                                  : '${_calculatedDistance!.toStringAsFixed(1)} meters',
                         ),
                       ),
                     ),
@@ -180,22 +209,12 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
                             },
                             children: [
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 15,
-                                ),
-                                child: Text(
-                                  'Yards',
-                                  style: TextStyle(fontSize: 12),
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                child: Text('Yards', style: TextStyle(fontSize: 12)),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 15,
-                                ),
-                                child: Text(
-                                  'Meters',
-                                  style: TextStyle(fontSize: 12),
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                child: Text('Meters', style: TextStyle(fontSize: 12)),
                               ),
                             ],
                           ),
@@ -205,6 +224,36 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
                   ],
                 ),
               ),
+
+              // Recommended Club and Gender Toggle card (combined)
+              Card(
+                elevation: 6,
+                margin: const EdgeInsets.fromLTRB(12, 0, 12, 6),
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: const Text('Recommended Club'),
+                      subtitle: Text(_recommendClub()),
+                      trailing: ToggleButtons(
+                        borderRadius: BorderRadius.circular(16),
+                        isSelected: [_isMale, !_isMale],
+                        onPressed: (int index) {
+                          setState(() {
+                            _isMale = index == 0;
+                          });
+                        },
+                        children: const [
+                          Icon(Icons.male, color: Colors.blue),
+                          Icon(Icons.female, color: Colors.pink),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Map
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -220,7 +269,8 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
                             options: MapOptions(
                               center: _currentLocation,
                               zoom: 16.0,
-                              onTap: (tapPosition, latLng) => _onMapTap(latLng),
+                              onTap: (tapPosition, latLng) =>
+                                  _onMapTap(latLng),
                             ),
                             children: [
                               TileLayer(
@@ -259,12 +309,7 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
                             bottom: 12,
                             right: 12,
                             child: FloatingActionButton(
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                255,
-                                255,
-                                255,
-                              ),
+                              backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                               onPressed: _recenterToUser,
                               foregroundColor: Colors.blue,
                               child: const Icon(Icons.my_location),

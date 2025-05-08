@@ -187,7 +187,7 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
         context,
         MaterialPageRoute(
           builder: (_) => Scaffold(
-            appBar: AppBar(title: Text('Multiplayer Scorecard - Code: $gameCode')),
+            appBar: AppBar(title: Text('Code: $gameCode')),
             body: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: DataTable(

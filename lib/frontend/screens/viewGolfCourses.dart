@@ -76,16 +76,21 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
       return 'Tap the map to place the flag';
     }
 
-    // Example logic to recommend a club based on distance (in yards)
+    // Convert distance to yards for easier interpretation
     double distanceInYards = _calculatedDistance! / 1.09361;
 
+    String clubRecommendation;
+
+    // Club recommendations based on distance
     if (distanceInYards < 100) {
-      return 'Wedge';
+      clubRecommendation = 'Wedge';
     } else if (distanceInYards < 200) {
-      return 'Iron';
+      clubRecommendation = 'Iron';
     } else {
-      return 'Driver';
+      clubRecommendation = 'Driver';
     }
+
+    return clubRecommendation;
   }
 
   @override

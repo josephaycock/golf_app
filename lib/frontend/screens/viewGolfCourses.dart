@@ -14,6 +14,7 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
     with AutomaticKeepAliveClientMixin {
   double? _calculatedDistance;
   bool _useYards = true;
+  bool _isMale = true; // To track gender selection
 
   final LatLng _currentLocation = LatLng(30.399895, -91.184794);
   LatLng? _holePosition;
@@ -81,13 +82,69 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
 
     String clubRecommendation;
 
-    // Club recommendations based on distance
-    if (distanceInYards < 100) {
-      clubRecommendation = 'Wedge';
-    } else if (distanceInYards < 200) {
-      clubRecommendation = 'Iron';
-    } else {
-      clubRecommendation = 'Driver';
+    // Male distance recommendations
+    if (_isMale) {
+      if (distanceInYards < 80) {
+        clubRecommendation = 'Lob Wedge';
+      } else if (distanceInYards < 95) {
+        clubRecommendation = 'Sand Wedge';
+      } else if (distanceInYards < 110) {
+        clubRecommendation = 'Pitching Wedge';
+      } else if (distanceInYards < 120) {
+        clubRecommendation = '9-Iron';
+      } else if (distanceInYards < 130) {
+        clubRecommendation = '8-Iron';
+      } else if (distanceInYards < 140) {
+        clubRecommendation = '7-Iron';
+      } else if (distanceInYards < 150) {
+        clubRecommendation = '6-Iron';
+      } else if (distanceInYards < 160) {
+        clubRecommendation = '5-Iron';
+      } else if (distanceInYards < 170) {
+        clubRecommendation = '4-Iron';
+      } else if (distanceInYards < 180) {
+        clubRecommendation = '3-Iron';
+      } else if (distanceInYards < 190) {
+        clubRecommendation = '3-Hybrid';
+      } else if (distanceInYards < 200) {
+        clubRecommendation = '5-Wood';
+      } else if (distanceInYards < 210) {
+        clubRecommendation = '3-Wood';
+      } else {
+        clubRecommendation = 'Driver';
+      }
+    } 
+    // Female distance recommendations
+    else {
+      if (distanceInYards < 35) {
+        clubRecommendation = 'Lob Wedge';
+      } else if (distanceInYards < 40) {
+        clubRecommendation = 'Sand Wedge';
+      } else if (distanceInYards < 50) {
+        clubRecommendation = 'Pitching Wedge';
+      } else if (distanceInYards < 60) {
+        clubRecommendation = '9-Iron';
+      } else if (distanceInYards < 70) {
+        clubRecommendation = '8-Iron';
+      } else if (distanceInYards < 80) {
+        clubRecommendation = '7-Iron';
+      } else if (distanceInYards < 90) {
+        clubRecommendation = '6-Iron';
+      } else if (distanceInYards < 100) {
+        clubRecommendation = '5-Iron';
+      } else if (distanceInYards < 110) {
+        clubRecommendation = '4-Iron';
+      } else if (distanceInYards < 120) {
+        clubRecommendation = '3-Iron';
+      } else if (distanceInYards < 130) {
+        clubRecommendation = '3-Hybrid';
+      } else if (distanceInYards < 140) {
+        clubRecommendation = '5-Wood';
+      } else if (distanceInYards < 150) {
+        clubRecommendation = '3-Wood';
+      } else {
+        clubRecommendation = 'Driver';
+      }
     }
 
     return clubRecommendation;
@@ -159,6 +216,28 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
                       ),
                     ),
                   ],
+                ),
+              ),
+
+              // Gender Toggle with Icons
+              Card(
+                elevation: 6,
+                margin: const EdgeInsets.fromLTRB(12, 0, 12, 6),
+                color: Colors.white,
+                child: ListTile(
+                  title: const Text('Select Gender'),
+                  trailing: ToggleButtons(
+                    isSelected: [_isMale, !_isMale],
+                    onPressed: (int index) {
+                      setState(() {
+                        _isMale = index == 0;
+                      });
+                    },
+                    children: const [
+                      Icon(Icons.male, color: Colors.blue),
+                      Icon(Icons.female, color: Colors.pink),
+                    ],
+                  ),
                 ),
               ),
 

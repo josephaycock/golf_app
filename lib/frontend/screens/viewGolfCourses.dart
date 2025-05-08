@@ -10,7 +10,8 @@ class ViewGolfCourses extends StatefulWidget {
   State<ViewGolfCourses> createState() => _ViewGolfCoursesState();
 }
 
-class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAliveClientMixin {
+class _ViewGolfCoursesState extends State<ViewGolfCourses>
+    with AutomaticKeepAliveClientMixin {
   int _currentScore = 0;
   double? _calculatedDistance;
   bool _useYards = true; // <-- Toggle between yards/meters
@@ -50,7 +51,8 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
       await Geolocator.requestPermission();
     }
   }
@@ -69,11 +71,11 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
     setState(() {
       _calculatedDistance = distanceInMeters;
     });
-    }
+  }
 
   void _recenterToUser() {
     _mapController.move(_currentLocation, 19.0);
-    }
+  }
 
   @override
   bool get wantKeepAlive => true;
@@ -83,145 +85,198 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses> with AutomaticKeepAli
     super.build(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('View Golf Course',
-          style: TextStyle(
-            color: Colors.white,
-          )),
+      appBar: AppBar(
+        title: Image.asset('assets/images/titleImage.png', height: 100),
         centerTitle: true,
-        backgroundColor: Colors.green[800],
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         automaticallyImplyLeading: false,
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // Score UI
-          Card(
-            margin: const EdgeInsets.all(12),
-            child: ListTile(
-              title: const Text('Current Score'),
-              subtitle: Text('$_currentScore'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.remove),
-                    onPressed: () => setState(() => _currentScore--),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: () => setState(() => _currentScore++),
-                  ),
-                ],
-              ),
-            ),
+          Positioned.fill(
+            child: Image.asset('assets/images/greenbg.png', fit: BoxFit.cover),
           ),
 
-          // Distance UI
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              children: [
-                // Distance label and value
-                Expanded(
-                  child: ListTile(
-                    title: const Text('Distance to Hole'),
-                    subtitle: Text(_calculatedDistance == null
-                        ? 'Tap the map to place the flag'
-                        : _useYards
-                            ? '${(_calculatedDistance! / 1.09361).toStringAsFixed(1)} yards'
-                            : '${_calculatedDistance!.toStringAsFixed(1)} meters'),
-                  ),
-                ),
-                // Toggle Button on the far right with rounded edges and smaller size
-                Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16), // Rounded edges
-                    child: ToggleButtons(
-                      isSelected: [_useYards, !_useYards],
-                      onPressed: (int index) {
-                        setState(() {
-                          _useYards = index == 0;
-                        });
-                      },
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Text(
-                            'Yards',
-                            style: TextStyle(fontSize: 12), // Smaller text size
+          Column(
+            children: [
+              Card(
+                elevation: 6,
+                margin: const EdgeInsets.all(12),
+                color: Colors.white,
+                child: ListTile(
+                  title: const Text('Current Score'),
+                  subtitle: Text('$_currentScore'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Material(
+                        elevation: 2,
+                        shape: CircleBorder(),
+                        child: Container(
+                          padding: const EdgeInsets.all(0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.remove),
+                            iconSize: 16,
+                            onPressed: () => setState(() => _currentScore--),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Text(
-                            'Meters',
-                            style: TextStyle(fontSize: 12), // Smaller text size
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Map section with markers
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Stack(
-                  children: [
-                    FlutterMap(
-                      mapController: _mapController,
-                      options: MapOptions(
-                        center: _currentLocation,
-                        zoom: 16.0,
-                        onTap: (tapPosition, latLng) => _onMapTap(latLng),
                       ),
-                      children: [
-                        TileLayer(
-                          urlTemplate:
-                              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-                          subdomains: ['a', 'b', 'c'],
+                      const SizedBox(width: 12),
+                      Material(
+                        elevation: 2,
+                        shape: CircleBorder(),
+                        child: Container(
+                          padding: const EdgeInsets.all(0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.add),
+                            iconSize: 16,
+                            onPressed: () => setState(() => _currentScore++),
+                          ),
                         ),
-                        MarkerLayer(
-                          markers: [
-                            Marker(
-                              width: 40,
-                              height: 40,
-                              point: _currentLocation,
-                              child: const Icon(Icons.person_pin_circle,
-                                  color: Colors.blue, size: 36),
-                            ),
-                            if (_holePosition != null)
-                              Marker(
-                                width: 40,
-                                height: 40,
-                                point: _holePosition!,
-                                child: const Icon(Icons.flag,
-                                    color: Colors.red, size: 36),
-                              ),
-                          ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Card(
+                elevation: 6,
+                margin: const EdgeInsets.symmetric(horizontal: 12),
+                color: Colors.white,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ListTile(
+                        title: const Text('Distance to Hole'),
+                        subtitle: Text(
+                          _calculatedDistance == null
+                              ? 'Tap the map to place the flag'
+                              : _useYards
+                              ? '${(_calculatedDistance! / 1.09361).toStringAsFixed(1)} yards'
+                              : '${_calculatedDistance!.toStringAsFixed(1)} meters',
                         ),
-                      ],
+                      ),
                     ),
-                    Positioned(
-                      bottom: 12,
-                      right: 12,
-                      child: FloatingActionButton(
-                        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                        onPressed: _recenterToUser,
-                        foregroundColor: Colors.blue,
-                        child: const Icon(Icons.my_location),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: Material(
+                        elevation: 2,
+                        borderRadius: BorderRadius.circular(16),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: ToggleButtons(
+                            isSelected: [_useYards, !_useYards],
+                            onPressed: (int index) {
+                              setState(() {
+                                _useYards = index == 0;
+                              });
+                            },
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                ),
+                                child: Text(
+                                  'Yards',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                ),
+                                child: Text(
+                                  'Meters',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Material(
+                    elevation: 6,
+                    borderRadius: BorderRadius.circular(16),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Stack(
+                        children: [
+                          FlutterMap(
+                            mapController: _mapController,
+                            options: MapOptions(
+                              center: _currentLocation,
+                              zoom: 16.0,
+                              onTap: (tapPosition, latLng) => _onMapTap(latLng),
+                            ),
+                            children: [
+                              TileLayer(
+                                urlTemplate:
+                                    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                                subdomains: ['a', 'b', 'c'],
+                              ),
+                              MarkerLayer(
+                                markers: [
+                                  Marker(
+                                    width: 40,
+                                    height: 40,
+                                    point: _currentLocation,
+                                    child: const Icon(
+                                      Icons.person_pin_circle,
+                                      color: Colors.blue,
+                                      size: 36,
+                                    ),
+                                  ),
+                                  if (_holePosition != null)
+                                    Marker(
+                                      width: 40,
+                                      height: 40,
+                                      point: _holePosition!,
+                                      child: const Icon(
+                                        Icons.flag,
+                                        color: Colors.red,
+                                        size: 36,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Positioned(
+                            bottom: 12,
+                            right: 12,
+                            child: FloatingActionButton(
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                255,
+                                255,
+                                255,
+                              ),
+                              onPressed: _recenterToUser,
+                              foregroundColor: Colors.blue,
+                              child: const Icon(Icons.my_location),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

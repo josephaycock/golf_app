@@ -6,16 +6,16 @@ class GameService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Generate 6-character game code
   String _generateGameCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final rand = Random();
     return List.generate(6, (_) => chars[rand.nextInt(chars.length)]).join();
   }
 
-  // Create a new game session
   Future<String> createGameSession(String playerName) async {
-    final uid = _auth.currentUser!.uid;
+    final user = _auth.currentUser;
+    if (user == null) throw Exception("User not signed in");
+    final uid = user.uid;
     final gameCode = _generateGameCode();
 
     await _firestore.collection('games').doc(gameCode).set({
@@ -24,7 +24,13 @@ class GameService {
       'players': {
         uid: {
           'name': playerName,
-          'scores': List.generate(18, (_) => 0),
+          'scores': List.generate(18, (_) => {
+            'score': 0,
+            'putts': 0,
+            'penalty': 0,
+            'drive': 'Center',
+            'sand': false,
+          }),
         }
       },
     });
@@ -32,9 +38,11 @@ class GameService {
     return gameCode;
   }
 
-  // Join an existing game session by code
   Future<String?> joinGameSession(String gameCode, String playerName) async {
-    final uid = _auth.currentUser!.uid;
+    final user = _auth.currentUser;
+    if (user == null) return 'User not signed in';
+    final uid = user.uid;
+
     final docRef = _firestore.collection('games').doc(gameCode);
     final doc = await docRef.get();
 
@@ -45,14 +53,19 @@ class GameService {
     await docRef.update({
       'players.$uid': {
         'name': playerName,
-        'scores': List.generate(18, (_) => 0),
+        'scores': List.generate(18, (_) => {
+          'score': 0,
+          'putts': 0,
+          'penalty': 0,
+          'drive': 'Center',
+          'sand': false,
+        }),
       }
     });
 
     return null; // Success
   }
 
-  // Fetch game data
   Future<Map<String, dynamic>?> getGameData(String gameCode) async {
     final doc = await _firestore.collection('games').doc(gameCode).get();
     return doc.data();

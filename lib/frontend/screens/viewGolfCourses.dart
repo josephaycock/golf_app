@@ -74,7 +74,7 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
 
   String _recommendClub() {
     if (_calculatedDistance == null) {
-      return 'Tap the map to place the flag';
+      return '';
     }
 
     // Convert distance to yards for easier interpretation
@@ -84,7 +84,10 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
 
     // Male distance recommendations
     if (_isMale) {
-      if (distanceInYards < 80) {
+      if (distanceInYards < 20){
+        clubRecommendation = 'Putter';
+      }
+      else if (distanceInYards < 80) {
         clubRecommendation = 'Lob Wedge';
       } else if (distanceInYards < 95) {
         clubRecommendation = 'Sand Wedge';
@@ -116,7 +119,10 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
     } 
     // Female distance recommendations
     else {
-      if (distanceInYards < 35) {
+      if (distanceInYards < 20){
+        clubRecommendation = 'Putter';
+      }
+      else if (distanceInYards < 35) {
         clubRecommendation = 'Lob Wedge';
       } else if (distanceInYards < 40) {
         clubRecommendation = 'Sand Wedge';
@@ -219,36 +225,31 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
                 ),
               ),
 
-              // Gender Toggle with Icons
+              // Recommended Club and Gender Toggle card (combined)
               Card(
                 elevation: 6,
                 margin: const EdgeInsets.fromLTRB(12, 0, 12, 6),
                 color: Colors.white,
-                child: ListTile(
-                  title: const Text('Select Gender'),
-                  trailing: ToggleButtons(
-                    isSelected: [_isMale, !_isMale],
-                    onPressed: (int index) {
-                      setState(() {
-                        _isMale = index == 0;
-                      });
-                    },
-                    children: const [
-                      Icon(Icons.male, color: Colors.blue),
-                      Icon(Icons.female, color: Colors.pink),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Recommended Club card (new card)
-              Card(
-                elevation: 6,
-                margin: const EdgeInsets.fromLTRB(12, 0, 12, 6),
-                color: Colors.white,
-                child: ListTile(
-                  title: const Text('Recommended Club'),
-                  subtitle: Text(_recommendClub()),
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: const Text('Recommended Club'),
+                      subtitle: Text(_recommendClub()),
+                      trailing: ToggleButtons(
+                        borderRadius: BorderRadius.circular(16),
+                        isSelected: [_isMale, !_isMale],
+                        onPressed: (int index) {
+                          setState(() {
+                            _isMale = index == 0;
+                          });
+                        },
+                        children: const [
+                          Icon(Icons.male, color: Colors.blue),
+                          Icon(Icons.female, color: Colors.pink),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
 

@@ -41,49 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCSTqf-Agz6JGrD5S6tsw4i9cZbI2eCoVA',
-    appId: '1:220069290015:web:61d637a03619f57f15352a',
-    messagingSenderId: '220069290015',
-    projectId: 'golf-app-3d9d1',
-    authDomain: 'golf-app-3d9d1.firebaseapp.com',
-    storageBucket: 'golf-app-3d9d1.firebasestorage.app',
-    measurementId: 'G-65Z18W1FBZ',
+    apiKey: 'AIzaSyAn0X5UivJl1i0ts149pHWKF9niG3rKy1U',
+    appId: '1:245346920233:web:87ac1f9edb5ec7dbb37938',
+    messagingSenderId: '245346920233',
+    projectId: 'golf-app-for-4330',
+    authDomain: 'golf-app-for-4330.firebaseapp.com',
+    storageBucket: 'golf-app-for-4330.firebasestorage.app',
+    measurementId: 'G-Q2NYDV4SYG',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAY7Ml9nZVU84smdbMXooHqEroJphsdBCQ',
-    appId: '1:220069290015:android:04277d6a5d2ae9b915352a',
-    messagingSenderId: '220069290015',
-    projectId: 'golf-app-3d9d1',
-    storageBucket: 'golf-app-3d9d1.firebasestorage.app',
+    apiKey: 'AIzaSyBFETGyEtDCr4yB5kH4UB3YYoLH8wmHDX4',
+    appId: '1:245346920233:android:4059ecf5eaca889fb37938',
+    messagingSenderId: '245346920233',
+    projectId: 'golf-app-for-4330',
+    storageBucket: 'golf-app-for-4330.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCEUUWxTetP5tI18LZ-B3P1niiFG7jeT2A',
-    appId: '1:220069290015:ios:8e1bdf49ca96f8d715352a',
-    messagingSenderId: '220069290015',
-    projectId: 'golf-app-3d9d1',
-    storageBucket: 'golf-app-3d9d1.firebasestorage.app',
+    apiKey: 'AIzaSyASAJXcI-Qz8oXfCjZ_gKV2gxafarcaUlk',
+    appId: '1:245346920233:ios:bcb6a09d0b4dec99b37938',
+    messagingSenderId: '245346920233',
+    projectId: 'golf-app-for-4330',
+    storageBucket: 'golf-app-for-4330.firebasestorage.app',
     iosBundleId: 'com.example.golfApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCEUUWxTetP5tI18LZ-B3P1niiFG7jeT2A',
-    appId: '1:220069290015:ios:8e1bdf49ca96f8d715352a',
-    messagingSenderId: '220069290015',
-    projectId: 'golf-app-3d9d1',
-    storageBucket: 'golf-app-3d9d1.firebasestorage.app',
+    apiKey: 'AIzaSyASAJXcI-Qz8oXfCjZ_gKV2gxafarcaUlk',
+    appId: '1:245346920233:ios:bcb6a09d0b4dec99b37938',
+    messagingSenderId: '245346920233',
+    projectId: 'golf-app-for-4330',
+    storageBucket: 'golf-app-for-4330.firebasestorage.app',
     iosBundleId: 'com.example.golfApp',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCSTqf-Agz6JGrD5S6tsw4i9cZbI2eCoVA',
-    appId: '1:220069290015:web:15d3ebbeb7450fc215352a',
-    messagingSenderId: '220069290015',
-    projectId: 'golf-app-3d9d1',
-    authDomain: 'golf-app-3d9d1.firebaseapp.com',
-    storageBucket: 'golf-app-3d9d1.firebasestorage.app',
-    measurementId: 'G-GXD1RZ8EN5',
+    apiKey: 'AIzaSyAn0X5UivJl1i0ts149pHWKF9niG3rKy1U',
+    appId: '1:245346920233:web:d265f880b24d86ecb37938',
+    messagingSenderId: '245346920233',
+    projectId: 'golf-app-for-4330',
+    authDomain: 'golf-app-for-4330.firebaseapp.com',
+    storageBucket: 'golf-app-for-4330.firebasestorage.app',
+    measurementId: 'G-LRD20MVVG1',
   );
 
 }

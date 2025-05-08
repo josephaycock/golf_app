@@ -16,20 +16,25 @@ class NavWrapper extends StatefulWidget {
 
 class _NavWrapperState extends State<NavWrapper> {
   late int _selectedIndex;
+late final List<Widget> _pages;
 
-  final List<Widget> _pages = [
-    GolfScoreBoard(), // 0
-    const HelpScreen(), // 1
-    const HomeScreen(), // 2
-    const ViewGolfCourses(), // 3
-    const StatsPage(), // 4 <-- updated
+@override
+void initState() {
+  super.initState();
+  _selectedIndex = widget.initialIndex;
+
+  _pages = [
+    const GolfScoreBoard(key: PageStorageKey('scoreboard')),
+    const HelpScreen(),
+    const HomeScreen(),
+    const ViewGolfCourses(),
+    const StatsPage(),
   ];
+}
 
-  @override
-  void initState() {
-    super.initState();
-    _selectedIndex = widget.initialIndex;
-  }
+
+
+
 
   void _onItemTapped(int index) {
     setState(() {

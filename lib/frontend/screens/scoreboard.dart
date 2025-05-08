@@ -1,4 +1,3 @@
-// Golf Scoreboard with Stats Summary (Phase 3 Complete)
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -6,18 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../backend/services/firebase.dart';
 import '../../backend/services/models/player_stats.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-
-void main() => runApp(
-  MaterialApp(
-    theme: ThemeData.dark().copyWith(
-      scaffoldBackgroundColor: Colors.black,
-      appBarTheme: AppBarTheme(backgroundColor: Colors.black),
-      textTheme: ThemeData.dark().textTheme.apply(bodyColor: Colors.white),
-    ),
-    home: GolfScoreBoard(),
-  ),
-);
+import '../../backend/services/game_service.dart';
 
 class GolfScoreBoard extends StatefulWidget {
   const GolfScoreBoard({super.key});
@@ -27,14 +15,16 @@ class GolfScoreBoard extends StatefulWidget {
 }
 
 class _GolfScoreBoardState extends State<GolfScoreBoard> {
-   final FirebaseService _firebaseService = FirebaseService();
+  final FirebaseService _firebaseService = FirebaseService();
+  final GameService _gameService = GameService();
+
   bool hasStartedRound = false;
   String selectedCourse = 'Course A';
   String gameFormat = 'Traditional';
   int currentHole = 1;
   bool showSummary = false;
+  String? gameCode;
 
-  List<String> playerNames = ['Player 1'];
   List<Map<String, dynamic>> roundData = List.generate(
     18,
     (i) => {
@@ -46,113 +36,216 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
     },
   );
 
+  @override
+  void initState() {
+    super.initState();
+    _loadRound();
+  }
+
+  Future<void> _loadRound() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final roundJson = prefs.getString('roundData');
+      final savedCode = prefs.getString('gameCode');
+      final savedStarted = prefs.getBool('hasStartedRound') ?? false;
+
+      if (mounted && savedStarted && roundJson != null && savedCode != null) {
+        setState(() {
+          hasStartedRound = true;
+          roundData = List<Map<String, dynamic>>.from(jsonDecode(roundJson));
+          gameCode = savedCode;
+          showSummary = false;
+          currentHole = prefs.getInt('currentHole') ?? 1;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading round data: $e');
+    }
+  }
+
   void _startRound() {
     setState(() {
       hasStartedRound = true;
       showSummary = false;
       currentHole = 1;
     });
-  }
-
-  void _updateStat(int hole, String key, dynamic value) {
-    setState(() => roundData[hole - 1][key] = value);
     _saveRound();
   }
 
-  Future<void> _saveRound() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('roundData', jsonEncode(roundData));
-  }
-
-  int _countPlayed() => roundData.where((d) => d['score'] > 0).length;
-  int _sum(String key) =>
-      roundData.fold(0, (sum, e) => sum + ((e[key] ?? 0) as int));
-  int _countDrive(String dir) =>
-      roundData.where((d) => d['drive'] == dir && d['score'] > 0).length;
-  int _countSandSave() =>
-      roundData.where((d) => d['sand'] == true && d['score'] > 0).length;
-Future<void> _updateStatsAfterRound() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) return;
-
-    int totalStrokes = _sum('score');
-    int birdies = roundData.where((d) => d['score'] == 3).length;
-    int pars = roundData.where((d) => d['score'] == 4).length;
-    int bogeys = roundData.where((d) => d['score'] == 5).length;
-
-    final newStats = {
-      'gamesPlayed': FieldValue.increment(1),
-      'totalStrokes': FieldValue.increment(totalStrokes),
-      'birdies': FieldValue.increment(birdies),
-      'pars': FieldValue.increment(pars),
-      'bogeys': FieldValue.increment(bogeys),
-    };
-
+  Future<void> _updateFirestoreScore() async {
     try {
-      await _firebaseService.updatePlayerStats(userId, newStats);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Stats updated successfully!')),
-      );
+      if (gameCode == null) return;
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) return;
+      
+      await FirebaseFirestore.instance
+          .collection('games')
+          .doc(gameCode)
+          .update({
+        'players.$uid.scores': roundData,
+      });
     } catch (e) {
+      debugPrint('Error updating Firestore: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update stats: $e')),
+        SnackBar(content: Text('Failed to sync scores: $e')),
       );
     }
   }
-  Widget _buildSummary() {
-    final played = _countPlayed();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Round Summary',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        Text('Holes Played: $played'),
-        Text('Total Score: ${_sum('score')}'),
-        Text('Total Putts: ${_sum('putts')}'),
-        Text('Total Penalties: ${_sum('penalty')}'),
-        const SizedBox(height: 12),
-        Text('Drive Accuracy:'),
-        Text('  Left: ${_countDrive('Left')}'),
-        Text('  Center: ${_countDrive('Center')}'),
-        Text('  Right: ${_countDrive('Right')}'),
-        const SizedBox(height: 12),
-        Text('Sand Saves: ${_countSandSave()}'),
-        const SizedBox(height: 16),
-        Center(
-          child: ElevatedButton(
-           onPressed: () async {
-  await _updateStatsAfterRound(); // 🔥 Update Firebase stats
-  setState(() {
-    hasStartedRound = false;
-    showSummary = false;
-    roundData = List.generate(
-      18,
-      (i) => {
-        'score': 0,
-        'putts': 0,
-        'penalty': 0,
-        'drive': 'Center',
-        'sand': false,
-      },
-    );
-  });
-},
-            child: const Text('End Round'),
+
+  Future<void> _updateStat(int hole, String key, dynamic value) async {
+    setState(() {
+      roundData[hole - 1][key] = value;
+      currentHole = hole;
+    });
+    await _saveRound();
+    await _updateFirestoreScore();
+  }
+
+  Future<void> _saveRound() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('hasStartedRound', hasStartedRound);
+      await prefs.setString('roundData', jsonEncode(roundData));
+      await prefs.setInt('currentHole', currentHole);
+      if (gameCode != null) {
+        await prefs.setString('gameCode', gameCode!);
+      }
+    } catch (e) {
+      debugPrint('Error saving round data: $e');
+    }
+  }
+
+  int _countPlayed() => roundData.where((d) => d['score'] > 0).length;
+  int _sum(String key) => roundData.fold(0, (sum, e) => sum + ((e[key] ?? 0) as int));
+  int _countDrive(String dir) => roundData.where((d) => d['drive'] == dir && d['score'] > 0).length;
+  int _countSandSave() => roundData.where((d) => d['sand'] == true && d['score'] > 0).length;
+
+  Future<void> _updateStatsAfterRound() async {
+    try {
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) return;
+
+      int totalStrokes = _sum("score");
+      int birdies = roundData.where((d) => d['score'] == 3).length;
+      int pars = roundData.where((d) => d['score'] == 4).length;
+      int bogeys = roundData.where((d) => d['score'] == 5).length;
+
+      final newStats = {
+        'gamesPlayed': FieldValue.increment(1),
+        'totalStrokes': FieldValue.increment(totalStrokes),
+        'birdies': FieldValue.increment(birdies),
+        'pars': FieldValue.increment(pars),
+        'bogeys': FieldValue.increment(bogeys),
+      };
+
+      await _firebaseService.updatePlayerStats(userId, newStats);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Stats updated successfully!')),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error updating stats: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update stats: $e')),
+        );
+      }
+    }
+  }
+
+  Future<String?> _askForName() async {
+    final controller = TextEditingController();
+    return showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Enter Your Name'),
+        content: TextField(controller: controller),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
           ),
-        ),
-      ],
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildSlider(
-    String label,
-    int value,
-    Function(int) onChanged, {
-    int max = 12,
-  }) {
+  void _showOtherPlayerScores() async {
+    try {
+      if (gameCode == null) return;
+      final gameData = await _gameService.getGameData(gameCode!);
+      if (gameData == null || !mounted) return;
+      
+      final players = gameData['players'] as Map<String, dynamic>;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => Scaffold(
+            appBar: AppBar(title: Text('Multiplayer Scorecard - Code: $gameCode')),
+            body: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: [
+                  const DataColumn(label: Text('Player')),
+                  ...List.generate(18, (i) => DataColumn(label: Text('${i + 1}'))),
+                  const DataColumn(label: Text('Total')),
+                ],
+                rows: players.entries.map((entry) {
+                  final name = entry.value['name'] ?? 'Unnamed';
+                  final scores = List<Map<String, dynamic>>.from(entry.value['scores'] ?? []);
+                  
+                  // Ensure scores has 18 elements
+                  while (scores.length < 18) {
+                    scores.add({
+                      'score': 0,
+                      'putts': 0,
+                      'penalty': 0,
+                      'drive': 'Center',
+                      'sand': false,
+                    });
+                  }
+                  
+                  final total = scores.fold<int>(0, (sum, s) => sum + ((s['score'] ?? 0) as int));
+                  
+                  return DataRow(cells: [
+                    DataCell(Text(name)),
+                    ...scores.asMap().entries.map((entry) {
+                      final i = entry.key;
+                      final s = entry.value;
+                      return DataCell(Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: i + 1 == currentHole ? Colors.yellow.withOpacity(0.3) : null,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text('${s["score"] ?? 0}'),
+                      ));
+                    }),
+                    DataCell(Text('$total')),
+                  ]);
+                }).toList(),
+              ),
+            ),
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint('Error showing player scores: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load scores: $e')),
+        );
+      }
+    }
+  }
+
+  Widget _buildSlider(String label, int value, Function(int) onChanged, {int max = 12}) {
     return Column(
       children: [
         Text('$label: $value'),
@@ -161,23 +254,39 @@ Future<void> _updateStatsAfterRound() async {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: max,
-            itemBuilder:
-                (_, i) => GestureDetector(
-                  onTap: () => onChanged(i + 1),
-                  child: Container(
-                    width: 40,
-                    margin: const EdgeInsets.all(4),
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: (i + 1) == value ? Colors.green : Colors.grey[800],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(child: Text('${i + 1}')),
-                  ),
+            itemBuilder: (_, i) => GestureDetector(
+              onTap: () => onChanged(i + 1),
+              child: Container(
+                width: 40,
+                margin: const EdgeInsets.all(4),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: (i + 1) == value ? Colors.green : Colors.grey[800],
+                  borderRadius: BorderRadius.circular(10),
                 ),
+                child: Center(child: Text('${i + 1}')),
+              ),
+            ),
           ),
         ),
       ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Golf Scorecard'),
+        // Remove back button when in a round
+        automaticallyImplyLeading: false
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: hasStartedRound
+            ? (showSummary ? _buildSummary() : SingleChildScrollView(child: _buildStatInput()))
+            : _buildSetupScreen(),
+      ),
     );
   }
 
@@ -186,39 +295,28 @@ Future<void> _updateStatsAfterRound() async {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: ElevatedButton.icon(
+            onPressed: gameCode != null ? _showOtherPlayerScores : null,
+            icon: const Icon(Icons.visibility),
+            label: const Text('View All Scores'),
+          ),
+        ),
         Text('Hole $currentHole', style: const TextStyle(fontSize: 20)),
         const SizedBox(height: 12),
-        _buildSlider(
-          'Score',
-          holeStats['score'],
-          (v) => _updateStat(currentHole, 'score', v),
-        ),
-        _buildSlider(
-          'Putts',
-          holeStats['putts'],
-          (v) => _updateStat(currentHole, 'putts', v),
-          max: 6,
-        ),
-        _buildSlider(
-          'Penalties',
-          holeStats['penalty'],
-          (v) => _updateStat(currentHole, 'penalty', v),
-          max: 4,
-        ),
+        _buildSlider('Score', holeStats['score'], (v) => _updateStat(currentHole, 'score', v)),
+        _buildSlider('Putts', holeStats['putts'], (v) => _updateStat(currentHole, 'putts', v), max: 6),
+        _buildSlider('Penalties', holeStats['penalty'], (v) => _updateStat(currentHole, 'penalty', v), max: 4),
         const SizedBox(height: 12),
-        Text('Drive Accuracy'),
+        const Text('Drive Accuracy'),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children:
-              ['Left', 'Center', 'Right']
-                  .map(
-                    (d) => ChoiceChip(
-                      label: Text(d),
-                      selected: holeStats['drive'] == d,
-                      onSelected: (_) => _updateStat(currentHole, 'drive', d),
-                    ),
-                  )
-                  .toList(),
+          children: ['Left', 'Center', 'Right'].map((d) => ChoiceChip(
+            label: Text(d),
+            selected: holeStats['drive'] == d,
+            onSelected: (_) => _updateStat(currentHole, 'drive', d),
+          )).toList(),
         ),
         const SizedBox(height: 12),
         Row(
@@ -235,13 +333,11 @@ Future<void> _updateStatsAfterRound() async {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             ElevatedButton(
-              onPressed:
-                  currentHole > 1 ? () => setState(() => currentHole--) : null,
+              onPressed: currentHole > 1 ? () => setState(() => currentHole--) : null,
               child: const Text('Previous'),
             ),
             ElevatedButton(
-              onPressed:
-                  currentHole < 18 ? () => setState(() => currentHole++) : null,
+              onPressed: currentHole < 18 ? () => setState(() => currentHole++) : null,
               child: const Text('Next'),
             ),
           ],
@@ -257,57 +353,201 @@ Future<void> _updateStatsAfterRound() async {
     );
   }
 
-  Widget _buildSetupScreen() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Select Course:', style: TextStyle(fontSize: 18)),
-          DropdownButton<String>(
-            value: selectedCourse,
-            items:
-                ['Course A', 'Course B'].map((course) {
-                  return DropdownMenuItem(value: course, child: Text(course));
-                }).toList(),
-            onChanged: (val) => setState(() => selectedCourse = val!),
+  Widget _buildSummary() {
+    final played = _countPlayed();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Round Summary', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16),
+        Text('Holes Played: $played'),
+        Text('Total Score: ${_sum("score")}'),
+        Text('Total Putts: ${_sum("putts")}'),
+        Text('Total Penalties: ${_sum("penalty")}'),
+        const SizedBox(height: 12),
+        const Text('Drive Accuracy:'),
+        Text('  Left: ${_countDrive("Left")}'),
+        Text('  Center: ${_countDrive("Center")}'),
+        Text('  Right: ${_countDrive("Right")}'),
+        const SizedBox(height: 12),
+        Text('Sand Saves: ${_countSandSave()}'),
+        const SizedBox(height: 16),
+        Center(
+          child: ElevatedButton(
+            onPressed: () async {
+              await _updateStatsAfterRound();
+              
+              // Clear SharedPreferences data
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.remove('hasStartedRound');
+              await prefs.remove('roundData');
+              await prefs.remove('gameCode');
+              await prefs.remove('currentHole');
+              
+              if (mounted) {
+                setState(() {
+                  hasStartedRound = false;
+                  showSummary = false;
+                  gameCode = null;
+                  roundData = List.generate(18, (i) => {
+                    'score': 0,
+                    'putts': 0,
+                    'penalty': 0,
+                    'drive': 'Center',
+                    'sand': false,
+                  });
+                });
+              }
+            },
+            child: const Text('End Round'),
           ),
-          const SizedBox(height: 16),
-          const Text('Game Format:', style: TextStyle(fontSize: 18)),
-          Text(
-            '$gameFormat - Keep track of score, putts, penalties, drives, and sand saves.',
-          ),
-          const Spacer(),
-          Center(
-            child: ElevatedButton(
-              onPressed: _startRound,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 12,
-                ),
-              ),
-              child: const Text('Start Round'),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Golf Scorecard')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child:
-            hasStartedRound
-                ? (showSummary
-                    ? _buildSummary()
-                    : SingleChildScrollView(child: _buildStatInput()))
-                : _buildSetupScreen(),
-      ),
+  Widget _buildSetupScreen() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Select Course:', style: TextStyle(fontSize: 18)),
+        DropdownButton<String>(
+          value: selectedCourse,
+          items: ['Course A', 'Course B']
+              .map((course) => DropdownMenuItem(value: course, child: Text(course)))
+              .toList(),
+          onChanged: (val) {
+            if (val != null) {
+              setState(() => selectedCourse = val);
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+        const Text('Game Format:', style: TextStyle(fontSize: 18)),
+        Text('$gameFormat - Keep track of all stats during the round.'),
+        const SizedBox(height: 24),
+        const Text('Start a game:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        ElevatedButton.icon(
+          onPressed: () async {
+            final codeController = TextEditingController();
+            final nameController = TextEditingController();
+            final result = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Join Multiplayer Game'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(labelText: 'Your Name'),
+                    ),
+                    TextField(
+                      controller: codeController,
+                      decoration: const InputDecoration(labelText: 'Game Code'),
+                    ),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Cancel'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Join'),
+                  ),
+                ],
+              ),
+            );
+            
+            if (result == true) {
+              final name = nameController.text.trim();
+              final code = codeController.text.trim();
+              
+              if (name.isEmpty || code.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Name and code required')),
+                );
+                return;
+              }
+              
+              final error = await _gameService.joinGameSession(code, name);
+              if (error != null) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(error)),
+                  );
+                }
+              } else {
+                // Automatically start the round and show the scoring screen
+                setState(() {
+                  gameCode = code;
+                  hasStartedRound = true;
+                  showSummary = false;
+                  currentHole = 1;
+                });
+                await _saveRound();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Joined game $code')),
+                  );
+                }
+              }
+            }
+          },
+          icon: const Icon(Icons.login),
+          label: const Text('Join Game'),
+        ),
+        const SizedBox(height: 12),
+        ElevatedButton.icon(
+          onPressed: () async {
+            final name = await _askForName();
+            if (name == null || name.isEmpty) return;
+            
+            try {
+              final code = await _gameService.createGameSession(name);
+              
+              // Automatically start the round and show the scoring screen
+              setState(() {
+                gameCode = code;
+                hasStartedRound = true;
+                showSummary = false;
+                currentHole = 1;
+              });
+              
+              await _saveRound();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Game created! Code: $code')),
+                );
+              }
+            } catch (e) {
+              debugPrint('Error creating game: $e');
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to create game: $e')),
+                );
+              }
+            }
+          },
+          icon: const Icon(Icons.group_add),
+          label: const Text('Create Multiplayer Game'),
+        ),
+        const SizedBox(height: 16),
+        const Divider(),
+        const SizedBox(height: 16),
+        Center(
+          child: ElevatedButton(
+            onPressed: _startRound, 
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+            ),
+            child: const Text('Start Solo Round'),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -18,7 +18,19 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
   final GameService _gameService = GameService();
 
   bool hasStartedRound = false;
-  String selectedCourse = 'Course A';
+  final List<String> golfCourseNames = [
+    "BREC's Webb Memorial Golf Course",
+    "Santa Maria Golf Course",
+    "City Park Golf Course",
+    "Howell Park Golf Course",
+    "Dumas Memorial Golf Course",
+    "LSU Golf Course",
+    "Pelican Point Golf Club",
+    "The Island Golf Course",
+    "Copper Mill Golf Club",
+    "The Bluffs on Thompson Creek",
+  ];
+  String selectedCourse = 'BREC\'s Webb Memorial Golf Course';
   String gameFormat = 'Traditional';
   int currentHole = 1;
   bool showSummary = false;
@@ -165,7 +177,7 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
                 child: const Text('Cancel'),
-                style: ElevatedButton.styleFrom(foregroundColor: Colors.black),
+                style: ElevatedButton.styleFrom(foregroundColor: Colors.white),
               ),
               ElevatedButton(
                 onPressed:
@@ -531,16 +543,19 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
         const Text('Select Course:', style: TextStyle(fontSize: 18)),
         DropdownButton<String>(
           value: selectedCourse,
+          isExpanded: true,
           items:
-              ['Course A', 'Course B']
-                  .map(
-                    (course) =>
-                        DropdownMenuItem(value: course, child: Text(course)),
-                  )
-                  .toList(),
-          onChanged: (val) {
-            if (val != null) {
-              setState(() => selectedCourse = val);
+              golfCourseNames.map((course) {
+                return DropdownMenuItem<String>(
+                  value: course,
+                  child: Text(course),
+                );
+              }).toList(),
+          onChanged: (value) {
+            if (value != null) {
+              setState(() {
+                selectedCourse = value;
+              });
             }
           },
         ),

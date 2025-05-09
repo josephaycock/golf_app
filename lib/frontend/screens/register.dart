@@ -21,9 +21,9 @@ class _RegisterWidgetState extends State<RegisterWidget> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
       return;
     }
 
@@ -36,14 +36,19 @@ class _RegisterWidgetState extends State<RegisterWidget> {
       );
 
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/nav');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registration successful! Please log in.'),
+          ),
+        );
+        Navigator.pop(context);
       }
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Registration failed')),
+        SnackBar(content: Text('Registration failed: ${e.message}')),
       );
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      setState(() => _isLoading = false);
     }
   }
 
@@ -59,53 +64,125 @@ class _RegisterWidgetState extends State<RegisterWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
-        backgroundColor: Colors.green[800],
+        title: Image.asset('assets/images/titleImage.png', height: 100),
+        centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) =>
-                    value!.isEmpty ? 'Please enter your email' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) =>
-                    value!.length < 6 ? 'Password must be at least 6 characters' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _confirmPasswordController,
-                decoration: const InputDecoration(labelText: 'Confirm Password'),
-                obscureText: true,
-                validator: (value) =>
-                    value!.isEmpty ? 'Please confirm your password' : null,
-              ),
-              const SizedBox(height: 24),
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: _register,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[800],
-                        foregroundColor: Colors.white,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset('assets/images/registerbg.png', fit: BoxFit.cover),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 260),
+                    const Text(
+                      'Create Account',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: const Text('Register'),
                     ),
-            ],
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      _emailController,
+                      'Email',
+                      TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      _passwordController,
+                      'Password',
+                      TextInputType.text,
+                      obscure: true,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      _confirmPasswordController,
+                      'Confirm Password',
+                      TextInputType.text,
+                      obscure: true,
+                    ),
+                    const SizedBox(height: 20),
+                    _isLoading
+                        ? const CircularProgressIndicator()
+                        : SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _register,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                246,
+                                37,
+                                37,
+                                37,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 50,
+                                vertical: 17,
+                              ),
+                            ),
+                            child: Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildTextField(
+    TextEditingController controller,
+    String labelText,
+    TextInputType keyboardType, {
+    bool obscure = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        filled: true,
+        fillColor: const Color.fromARGB(204, 238, 238, 238),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 18.0,
+          horizontal: 20.0,
+        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(30.0)),
+      ),
+      keyboardType: keyboardType,
+      obscureText: obscure,
+      validator: (value) {
+        if (value == null || value.isEmpty) return 'Enter your $labelText';
+        if (labelText == 'Email' && !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+          return 'Enter a valid email';
+        }
+        if (labelText == 'Password' && value.length < 6) {
+          return 'Password must be at least 6 characters';
+        }
+        if (labelText == 'Confirm Password' &&
+            value != _passwordController.text) {
+          return 'Passwords do not match';
+        }
+        return null;
+      },
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:golf_app/frontend/screens/viewGolfCourses.dart';
+import 'package:golf_app/frontend/screens/scoreboard.dart';
 import 'package:golf_app/frontend/screens/stats.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -10,30 +11,107 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          _buildBackground(),
+          // Background Image
+          SizedBox.expand(
+            child: Image.asset('assets/images/loginbg.png', fit: BoxFit.cover),
+          ),
+          // Semi-transparent overlay
           Container(color: Colors.black.withOpacity(0.4)),
+          // Main Content
           SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 40.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _buildLogo(),
+                  // Title logo
+                  Image.asset('assets/images/BirdieBoard.png', width: 250),
                   const SizedBox(height: 30),
-                  _buildWelcomeText(context),
-                  const SizedBox(height: 50),
-                  _buildNavButton(
-                    context,
-                    label: 'View Golf Courses',
-                    icon: Icons.golf_course,
-                    destination: const ViewGolfCourses(),
+                  const Text(
+                    'Welcome to BirdieBoard!',
+                    style: TextStyle(
+                      fontSize: 34,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 20),
-                  _buildNavButton(
-                    context,
-                    label: 'View Stats',
+                  const Text(
+                    'Your complete golf companion:\n'
+                    '✔️ Real-time score tracking\n'
+                    '✔️ Discover and map new courses\n'
+                    '✔️ Scoreboards and Stats Updates\n'
+                    '✔️ Analytics that will help improve your game\n',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white70,
+                      height: 1.6,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 40),
+
+                  // Features Section
+                  FeatureCard(
+                    icon: Icons.golf_course,
+                    title: 'Course Finder',
+                    description:
+                        'Explore various courses nearby and map out your next round.',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ViewGolfCourses(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  FeatureCard(
+                    icon: Icons.leaderboard,
+                    title: 'Scoreboard Battles',
+                    description:
+                        'Climb the ranks and compete with other players.',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GolfScoreBoard(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  FeatureCard(
                     icon: Icons.bar_chart,
-                    destination: const StatsPage(),
+                    title: 'View Stats',
+                    description:
+                        'Analyze your game stats, birdies, pars, bogeys, and trends.',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const StatsPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Bottom Logo
+                  Image.asset('assets/images/BirdieBoard.png', width: 100),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'BirdieBoard — Master Your Golf Game.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white70,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ],
               ),
@@ -43,45 +121,62 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildBackground() {
-    return SizedBox.expand(
-      child: Image.asset('assets/images/loginbg.png', fit: BoxFit.cover),
-    );
-  }
+class FeatureCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String description;
+  final VoidCallback onTap;
 
-  Widget _buildLogo() {
-    return Image.asset('assets/images/BirdieBoard.png', width: 250);
-  }
+  const FeatureCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.onTap,
+  });
 
-  Widget _buildWelcomeText(BuildContext context) {
-    return Text(
-      'Welcome to BirdieBoard!',
-      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-        fontSize: 34,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white24),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, size: 40, color: Colors.white),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    description,
+                    style: const TextStyle(fontSize: 16, color: Colors.white70),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-      textAlign: TextAlign.center,
-    );
-  }
-
-  Widget _buildNavButton(BuildContext context,
-      {required String label, required IconData icon, required Widget destination}) {
-    return ElevatedButton.icon(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => destination),
-        );
-      },
-      style: ElevatedButton.styleFrom(
-        minimumSize: const Size.fromHeight(50),
-        backgroundColor: Colors.green[800],
-        foregroundColor: Colors.white,
-      ),
-      icon: Icon(icon),
-      label: Text(label, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white)),
     );
   }
 }

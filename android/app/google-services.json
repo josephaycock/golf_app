@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "220069290015",
-    "project_id": "golf-app-3d9d1",
-    "storage_bucket": "golf-app-3d9d1.firebasestorage.app"
+    "project_number": "304786707067",
+    "project_id": "golfapp-2a426",
+    "storage_bucket": "golfapp-2a426.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:220069290015:android:04277d6a5d2ae9b915352a",
+        "mobilesdk_app_id": "1:304786707067:android:fce697ac532bdf3e6388de",
         "android_client_info": {
           "package_name": "com.example.golf_app"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAY7Ml9nZVU84smdbMXooHqEroJphsdBCQ"
+          "current_key": "AIzaSyDBrgXkifLqZ8VYaV03qfh5Wgulk4KpF-A"
         }
       ],
       "services": {

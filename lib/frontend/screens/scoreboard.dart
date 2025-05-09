@@ -165,11 +165,16 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
                 child: const Text('Cancel'),
+                style: ElevatedButton.styleFrom(foregroundColor: Colors.black),
               ),
               ElevatedButton(
                 onPressed:
                     () => Navigator.of(context).pop(controller.text.trim()),
                 child: const Text('OK'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                ),
               ),
             ],
           ),
@@ -319,13 +324,14 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green[50],
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
         title: Image.asset('assets/images/titleImage.png', height: 100),
         centerTitle: true,
-        backgroundColor: Colors.green[800],
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         automaticallyImplyLeading: false,
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child:
@@ -386,11 +392,18 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children:
               ['Left', 'Center', 'Right'].map((d) {
+                final isSelected = holeStats['drive'] == d;
                 return ChoiceChip(
-                  label: Text(d),
-                  selected: holeStats['drive'] == d,
+                  label: Text(
+                    d,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  selected: isSelected,
                   onSelected: (_) => _updateStat(currentHole, 'drive', d),
                   selectedColor: Colors.green,
+                  backgroundColor: Colors.grey[200],
                 );
               }).toList(),
         ),
@@ -571,10 +584,17 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
                       TextButton(
                         onPressed: () => Navigator.pop(context, false),
                         child: const Text('Cancel'),
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.black,
+                        ),
                       ),
                       ElevatedButton(
                         onPressed: () => Navigator.pop(context, true),
                         child: const Text('Join'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -659,7 +679,7 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
         Center(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[700],
+              backgroundColor: Colors.green,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
             ),
             onPressed: _startRound,

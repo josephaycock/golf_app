@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tips_and_drills.dart';
+
 class HelpScreen extends StatelessWidget {
   const HelpScreen({super.key});
 
@@ -8,44 +9,47 @@ class HelpScreen extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Send Feedback'),
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () => Navigator.of(context).pop(),
+      builder:
+          (BuildContext context) => AlertDialog(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Send Feedback'),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
             ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              maxLines: 5,
-              decoration: const InputDecoration(
-                hintText: 'Type your feedback here...',
-                border: OutlineInputBorder(),
-              ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  maxLines: 5,
+                  decoration: const InputDecoration(
+                    hintText: 'Type your feedback here...',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Feedback sent successfully!'),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Send'),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Feedback sent successfully!')),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[800],
-                foregroundColor: Colors.black,
-              ),
-              child: const Text('Send'),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -86,6 +90,7 @@ class HelpScreen extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         automaticallyImplyLeading: false,
       ),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -107,7 +112,7 @@ class HelpScreen extends StatelessWidget {
             _buildFAQItem(
               'How do I edit and delete a player?',
               'To edit the player name: tap the name you want to change.\n'
-              'To delete a player: hold down on the name you want to delete.',
+                  'To delete a player: hold down on the name you want to delete.',
             ),
 
             const SizedBox(height: 24),
@@ -120,7 +125,10 @@ class HelpScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Professional Tips & Practice Drills',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     const Text(
@@ -138,8 +146,8 @@ class HelpScreen extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[800],
-                        foregroundColor: Colors.black,
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
                       ),
                       child: const Text('View Tips & Drills'),
                     ),
@@ -158,17 +166,26 @@ class HelpScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Need more help?',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 8),
-                    const Text('Email us at: support@golfapp.com', style: TextStyle(fontSize: 16)),
-                    const Text('Phone: (555) 123-4567', style: TextStyle(fontSize: 16)),
+                    const Text(
+                      'Email us at: support@golfapp.com',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const Text(
+                      'Phone: (555) 123-4567',
+                      style: TextStyle(fontSize: 16),
+                    ),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () => _showFeedbackDialog(context),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[800],
-                        foregroundColor: Colors.black,
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
                       ),
                       child: const Text('Send Feedback'),
                     ),

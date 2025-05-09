@@ -13,141 +13,90 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> _login() async {
-    print("🔐 Login attempt started");
+    setState(() => _isLoading = true);
     try {
-      setState(() => _isLoading = true);
-
       await _auth.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      print("✅ Login successful");
-
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/nav');
       }
-    } on FirebaseAuthException {
-      print("❌ Login failed: \${e.code} - \${e.message}");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Login failed: \${e.message}')));
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed: ${e.message}')),
+      );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset('assets/images/titleImage.png', height: 100),
-        centerTitle: true,
+        title: const Text('Login'),
+        backgroundColor: Colors.green[800],
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            'assets/images/registerbg.png',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              print("❌ Error loading registerbg.png");
-              return Container(color: Colors.grey[300]);
-            },
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 260),
-                  const Text(
-                    'Welcome Back!',
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildTextField(
-                    controller: _emailController,
-                    labelText: 'Email',
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildTextField(
-                    controller: _passwordController,
-                    labelText: 'Password',
-                    keyboardType: TextInputType.text,
-                    obscure: true,
-                  ),
-                  const SizedBox(height: 20),
-                  _isLoading
-                      ? const CircularProgressIndicator()
-                      : SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            print("🚨 Login button pressed");
-                            _login();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(
-                              246,
-                              37,
-                              37,
-                              37,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 50,
-                              vertical: 17,
-                            ),
-                          ),
-                          child: const Text(
-                            'Log In',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Enter an email';
+                  if (!value.contains('@')) return 'Enter a valid email';
+                  return null;
+                },
               ),
-            ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'Password'),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Enter your password';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 24),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _login();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green[800],
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('Login'),
+                    ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String labelText,
-    required TextInputType keyboardType,
-    bool obscure = false,
-  }) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: labelText,
-        filled: true,
-        fillColor: const Color.fromARGB(204, 238, 238, 238),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 18.0,
-          horizontal: 20.0,
         ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(30.0)),
       ),
-      keyboardType: keyboardType,
-      obscureText: obscure,
     );
   }
 }

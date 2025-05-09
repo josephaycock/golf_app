@@ -189,10 +189,16 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
         MaterialPageRoute(
           builder:
               (_) => Scaffold(
-                appBar: AppBar(title: Text('Code: $gameCode')),
+                appBar: AppBar(
+                  title: Text('Code: $gameCode'),
+                  backgroundColor: Colors.green[800],
+                ),
                 body: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: DataTable(
+                    headingRowColor: MaterialStateProperty.all(
+                      Colors.green.withOpacity(0.2),
+                    ),
                     columns: [
                       const DataColumn(label: Text('Player')),
                       ...List.generate(
@@ -208,7 +214,6 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
                             entry.value['scores'] ?? [],
                           );
 
-                          // Ensure scores has 18 elements
                           while (scores.length < 18) {
                             scores.add({
                               'score': 0,
@@ -274,7 +279,10 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
   }) {
     return Column(
       children: [
-        Text('$label: $value'),
+        Text(
+          '$label: $value',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         SizedBox(
           height: 40,
           child: ListView.builder(
@@ -288,7 +296,10 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
                     margin: const EdgeInsets.all(4),
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: (i + 1) == value ? Colors.green : Colors.grey[800],
+                      color:
+                          (i + 1) == value
+                              ? Colors.green[800]
+                              : Colors.green[200],
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Center(
@@ -308,13 +319,13 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.green[50],
       appBar: AppBar(
         title: Image.asset('assets/images/titleImage.png', height: 100),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: Colors.green[800],
         automaticallyImplyLeading: false,
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(16),
         child:
@@ -335,12 +346,19 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
         Align(
           alignment: Alignment.centerRight,
           child: ElevatedButton.icon(
-            onPressed: gameCode != null ? _showOtherPlayerScores : null,
-            icon: const Icon(Icons.visibility),
-            label: const Text('View All Scores'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            onPressed: gameCode != null ? () => _showOtherPlayerScores() : null,
+            icon: const Icon(Icons.visibility, color: Colors.white),
+            label: const Text(
+              'View All Scores',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ),
-        Text('Hole $currentHole', style: const TextStyle(fontSize: 20)),
+        Text(
+          'Hole $currentHole',
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 12),
         _buildSlider(
           'Score',
@@ -360,25 +378,31 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
           max: 4,
         ),
         const SizedBox(height: 12),
-        const Text('Drive Accuracy'),
+        const Text(
+          'Drive Accuracy',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children:
-              ['Left', 'Center', 'Right']
-                  .map(
-                    (d) => ChoiceChip(
-                      label: Text(d),
-                      selected: holeStats['drive'] == d,
-                      onSelected: (_) => _updateStat(currentHole, 'drive', d),
-                    ),
-                  )
-                  .toList(),
+              ['Left', 'Center', 'Right'].map((d) {
+                return ChoiceChip(
+                  label: Text(d),
+                  selected: holeStats['drive'] == d,
+                  onSelected: (_) => _updateStat(currentHole, 'drive', d),
+                  selectedColor: Colors.green,
+                );
+              }).toList(),
         ),
         const SizedBox(height: 12),
         Row(
           children: [
-            const Text('Sand Save: '),
+            const Text(
+              'Sand Save:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             Switch(
+              activeColor: Colors.green,
               value: holeStats['sand'],
               onChanged: (v) => _updateStat(currentHole, 'sand', v),
             ),
@@ -389,22 +413,34 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
               onPressed:
                   currentHole > 1 ? () => setState(() => currentHole--) : null,
-              child: const Text('Previous'),
+              child: const Text(
+                'Previous',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
               onPressed:
                   currentHole < 18 ? () => setState(() => currentHole++) : null,
-              child: const Text('Next'),
+              child: const Text('Next', style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
         const SizedBox(height: 16),
         Center(
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green[700],
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+            ),
             onPressed: () => setState(() => showSummary = true),
-            child: const Text('Finish Round'),
+            child: const Text(
+              'Finish Round',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ),
       ],
@@ -435,10 +471,12 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
         const SizedBox(height: 16),
         Center(
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green[700],
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+            ),
             onPressed: () async {
               await _updateStatsAfterRound();
-
-              // Clear SharedPreferences data
               final prefs = await SharedPreferences.getInstance();
               await prefs.remove('hasStartedRound');
               await prefs.remove('roundData');
@@ -463,7 +501,10 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
                 });
               }
             },
-            child: const Text('End Round'),
+            child: const Text(
+              'End Round',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ),
       ],
@@ -500,6 +541,7 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
         ),
         const SizedBox(height: 8),
         ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
           onPressed: () async {
             final codeController = TextEditingController();
             final nameController = TextEditingController();
@@ -557,7 +599,6 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
                   ).showSnackBar(SnackBar(content: Text(error)));
                 }
               } else {
-                // Automatically start the round and show the scoring screen
                 setState(() {
                   gameCode = code;
                   hasStartedRound = true;
@@ -573,26 +614,24 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
               }
             }
           },
-          icon: const Icon(Icons.login),
-          label: const Text('Join Game'),
+          icon: const Icon(Icons.login, color: Colors.white),
+          label: const Text('Join Game', style: TextStyle(color: Colors.white)),
         ),
         const SizedBox(height: 10),
         ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
           onPressed: () async {
             final name = await _askForName();
             if (name == null || name.isEmpty) return;
 
             try {
               final code = await _gameService.createGameSession(name);
-
-              // Automatically start the round and show the scoring screen
               setState(() {
                 gameCode = code;
                 hasStartedRound = true;
                 showSummary = false;
                 currentHole = 1;
               });
-
               await _saveRound();
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -608,19 +647,26 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
               }
             }
           },
-          icon: const Icon(Icons.group_add),
-          label: const Text('Create Multiplayer Game'),
+          icon: const Icon(Icons.group_add, color: Colors.white),
+          label: const Text(
+            'Create Multiplayer Game',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         const SizedBox(height: 16),
         const Divider(),
         const SizedBox(height: 16),
         Center(
           child: ElevatedButton(
-            onPressed: _startRound,
             style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green[700],
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
             ),
-            child: const Text('Start Solo Round'),
+            onPressed: _startRound,
+            child: const Text(
+              'Start Solo Round',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ),
       ],

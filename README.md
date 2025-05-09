@@ -1,20 +1,50 @@
-# golf_app
+# BirdieBoard ⛳
 
-## Organization
+A Flutter-based golf scoring application that supports both solo and multiplayer modes. It allows users to track comprehensive statistics for each hole and sync data in real-time using Firebase.
 
-[Trello Board](https://trello.com/invite/b/67f43fc6f6ea9eed2bd3ecd7/ATTIfb16adbaacf03f65ae12cdec880bc1dd0F30395B/4330-final-project)
+---
 
+## 📱 Features
 
-[Figma](https://www.figma.com/design/o5FuLkbgnTFOy1HCcsRYnf/Golf-App-Design?node-id=0-1&t=Z4VPvOsmlX3tQsnN-1)
+- Track per-hole stats: score, putts, penalties, drive accuracy, and sand saves.
+- Multiplayer game support using game codes.
+- Firebase Authentication and Firestore integration for real-time data sync.
+- Automatic round resumption using local storage.
+- Clean and modern UI with a user-friendly experience.
+- Golf course selection from a pre-defined list.
 
+---
 
+## 🏌️ Courses Available
 
-Kyler Martin-Yeboah (comment commit)
+- BREC's Webb Memorial Golf Course  
+- City Park Golf Course  
+- Santa Maria Golf Course  
+- Beaver Creek Golf Course  
+- Historic City Park Golf Course  
+- J.S. Clark Golf Course  
+- Howell Park Golf Course  
 
-Jackson Cogan (comment)
+---
 
-Robert Smith
+# 🔧 Getting Started
 
-Darrius Anthony
+### Prerequisites
 
-A new Flutter project.
+- Flutter SDK: [Install Here](https://docs.flutter.dev/get-started/install)
+- Firebase Project with Authentication and Firestore enabled
+
+### Setup Instructions
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/golf_app.git
+   cd golf_app
+
+2. **Install Dependencies**
+    ```bash
+    flutter pub get
+
+3. **Run the App**
+    ```bash
+    flutter run

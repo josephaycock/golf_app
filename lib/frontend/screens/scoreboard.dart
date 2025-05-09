@@ -576,7 +576,7 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
           icon: const Icon(Icons.login),
           label: const Text('Join Game'),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         ElevatedButton.icon(
           onPressed: () async {
             final name = await _askForName();

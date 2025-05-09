@@ -54,6 +54,7 @@ class _GolfScoreBoardState extends State<GolfScoreBoard> {
   }
 
   Future<void> _loadRound() async {
+    await SharedPreferences.getInstance().then((prefs) => prefs.clear());
     try {
       final prefs = await SharedPreferences.getInstance();
       final roundJson = prefs.getString('roundData');

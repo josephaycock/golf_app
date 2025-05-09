@@ -14,13 +14,13 @@ class HomeScreen extends StatelessWidget {
           Container(color: Colors.black.withOpacity(0.4)),
           SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+              padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildLogo(),
                   const SizedBox(height: 30),
-                  _buildWelcomeText(),
+                  _buildWelcomeText(context),
                   const SizedBox(height: 50),
                   _buildNavButton(
                     context,
@@ -54,10 +54,10 @@ class HomeScreen extends StatelessWidget {
     return Image.asset('assets/images/BirdieBoard.png', width: 250);
   }
 
-  Widget _buildWelcomeText() {
-    return const Text(
+  Widget _buildWelcomeText(BuildContext context) {
+    return Text(
       'Welcome to BirdieBoard!',
-      style: TextStyle(
+      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
         fontSize: 34,
         fontWeight: FontWeight.bold,
         color: Colors.white,
@@ -81,7 +81,7 @@ class HomeScreen extends StatelessWidget {
         foregroundColor: Colors.white,
       ),
       icon: Icon(icon),
-      label: Text(label, style: const TextStyle(fontSize: 18)),
+      label: Text(label, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white)),
     );
   }
 }

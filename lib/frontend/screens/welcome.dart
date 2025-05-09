@@ -51,7 +51,7 @@ class WelcomeScreen extends StatelessWidget {
                             const Padding(
                               padding: EdgeInsets.symmetric(horizontal: 70.0),
                               child: Text(
-                                'Track your golf game with ease!',
+                                'Hack your golf game with ease!',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 20,

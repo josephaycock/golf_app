@@ -11,7 +11,7 @@ class TipsAndDrillsScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Tips & Drills'),
-          backgroundColor: Colors.green[800],
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Professional Tips'),
@@ -19,12 +19,8 @@ class TipsAndDrillsScreen extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
-          children: [
-            _buildTipsList(),
-            _buildDrillsList(),
-          ],
-        ),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        body: TabBarView(children: [_buildTipsList(), _buildDrillsList()]),
       ),
     );
   }
@@ -40,17 +36,11 @@ class TipsAndDrillsScreen extends StatelessWidget {
           child: ExpansionTile(
             title: Text(
               tip.title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             subtitle: Text(
               tip.category,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.grey[600], fontSize: 14),
             ),
             children: [
               Padding(
@@ -78,27 +68,18 @@ class TipsAndDrillsScreen extends StatelessWidget {
           child: ExpansionTile(
             title: Text(
               drill.title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Difficulty: ${drill.difficulty}',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
                 ),
                 Text(
                   'Time: ${drill.estimatedTime} minutes',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
                 ),
               ],
             ),
@@ -129,4 +110,4 @@ class TipsAndDrillsScreen extends StatelessWidget {
       },
     );
   }
-} 
+}

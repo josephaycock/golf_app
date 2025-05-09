@@ -84,10 +84,9 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
 
     // Male distance recommendations
     if (_isMale) {
-      if (distanceInYards < 20){
+      if (distanceInYards < 20) {
         clubRecommendation = 'Putter';
-      }
-      else if (distanceInYards < 80) {
+      } else if (distanceInYards < 80) {
         clubRecommendation = 'Lob Wedge';
       } else if (distanceInYards < 95) {
         clubRecommendation = 'Sand Wedge';
@@ -116,13 +115,12 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
       } else {
         clubRecommendation = 'Driver';
       }
-    } 
+    }
     // Female distance recommendations
     else {
-      if (distanceInYards < 20){
+      if (distanceInYards < 20) {
         clubRecommendation = 'Putter';
-      }
-      else if (distanceInYards < 35) {
+      } else if (distanceInYards < 35) {
         clubRecommendation = 'Lob Wedge';
       } else if (distanceInYards < 40) {
         clubRecommendation = 'Sand Wedge';
@@ -167,11 +165,9 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         automaticallyImplyLeading: false,
       ),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Stack(
         children: [
-          Positioned.fill(
-            child: Image.asset('assets/images/greenbg.png', fit: BoxFit.cover),
-          ),
           Column(
             children: [
               // Distance to Hole card (now first)
@@ -188,8 +184,8 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
                           _calculatedDistance == null
                               ? 'Tap the map to place the flag'
                               : _useYards
-                                  ? '${(_calculatedDistance! / 1.09361).toStringAsFixed(1)} yards'
-                                  : '${_calculatedDistance!.toStringAsFixed(1)} meters',
+                              ? '${(_calculatedDistance! / 1.09361).toStringAsFixed(1)} yards'
+                              : '${_calculatedDistance!.toStringAsFixed(1)} meters',
                         ),
                       ),
                     ),
@@ -209,12 +205,22 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
                             },
                             children: [
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 15),
-                                child: Text('Yards', style: TextStyle(fontSize: 12)),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                ),
+                                child: Text(
+                                  'Yards',
+                                  style: TextStyle(fontSize: 12),
+                                ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 15),
-                                child: Text('Meters', style: TextStyle(fontSize: 12)),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                ),
+                                child: Text(
+                                  'Meters',
+                                  style: TextStyle(fontSize: 12),
+                                ),
                               ),
                             ],
                           ),
@@ -269,8 +275,7 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
                             options: MapOptions(
                               center: _currentLocation,
                               zoom: 16.0,
-                              onTap: (tapPosition, latLng) =>
-                                  _onMapTap(latLng),
+                              onTap: (tapPosition, latLng) => _onMapTap(latLng),
                             ),
                             children: [
                               TileLayer(
@@ -309,7 +314,12 @@ class _ViewGolfCoursesState extends State<ViewGolfCourses>
                             bottom: 12,
                             right: 12,
                             child: FloatingActionButton(
-                              backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                255,
+                                255,
+                                255,
+                              ),
                               onPressed: _recenterToUser,
                               foregroundColor: Colors.blue,
                               child: const Icon(Icons.my_location),
